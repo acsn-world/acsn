@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description" content="ACSN Contact Form - Send your questions, suggestions, and feedback to Advanced Cyber Security Network.">
+
+<meta name="keywords" content="ACSN Contact Form, Cyber Security Questions, Feedback, Digital Safety">
+
+<meta name="author" content="ACSN">
+
+<meta name="robots" content="index, follow">
+
+<meta property="og:title" content="Contact Form - ACSN Advanced Cyber Security Network">
+
+<meta property="og:description" content="Send your questions and feedback to ACSN through our online contact form.">
+
+<meta property="og:image" content="logo.png">
+
+<meta property="og:type" content="website">
+
+<title>Contact - ACSN Advanced Cyber Security Network</title>
+
+<link rel="icon" href="logo.png">
+
+<link rel="stylesheet" href="cstyle.css">
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<img src="logo.png"
+alt="ACSN Website Logo"
+width="120"
+height="120">
+
+
+<h1>Contact ACSN</h1>
+
+
+<p>
+Send your questions, suggestions, and feedback through our online contact form.
+</p>
+
+
+</header>
+
+
+
+<nav>
+
+<a href="index.html">Home</a>
+
+<a href="about.html">About</a>
+
+<a href="tools.html">Security Tools</a>
+
+<a href="software.html">Software</a>
+
+<a href="contact.html" class="active">Contact</a>
+
+</nav>
+
+
+
+<main>
+
+
+<section>
+
+
+<h2>Send Your Question or Feedback</h2>
+
+
+<p>
+Fill out the form below to contact ACSN. Please provide correct information so we can understand your question or feedback.
+</p>
+
+
+
+<form id="telegramForm">
+
+
+
+<p>
+
+<label for="name">
+Full Name *
+</label>
+
+<br>
+
+<input
+type="text"
+id="name"
+name="name"
+placeholder="Enter your full name"
+required>
+
+</p>
+
+
+
+
+<p>
+
+<label for="email">
+Email Address *
+</label>
+
+<br>
+
+<input
+type="email"
+id="email"
+name="email"
+placeholder="Enter your email address"
+required>
+
+</p>
+
+
+
+
+<p>
+
+<label for="subject">
+Subject
+</label>
+
+<br>
+
+<input
+type="text"
+id="subject"
+name="subject"
+placeholder="Enter subject">
+
+</p>
+
+
+
+
+<p>
+
+<label for="message">
+Your Question or Feedback *
+</label>
+
+<br>
+
+<textarea
+id="message"
+name="message"
+rows="8"
+placeholder="Write your question or feedback here"
+required></textarea>
+
+</p>
+
+
+
+
+<p>
+
+<button type="submit" id="submitBtn">
+Send Message
+</button>
+
+</p>
+
+<p id="statusMsg" style="font-weight: bold; margin-top: 10px;"></p>
+
+</form>
+
+
+</section>
+
+
+
+<section>
+
+
+<h2>Security Notice</h2>
+
+
+<p>
+Please do not share passwords, OTPs, bank details, or any other sensitive personal information through this form.
+</p>
+
+
+</section>
+
+
+
+</main>
+
+
+
+<footer>
+
+<p>
+© 2026 ACSN - Advanced Cyber Security Network. All Rights Reserved.
+</p>
+
+<p>
+Building a Safer Digital World Through Cyber Security Awareness.
+</p>
+
+</footer>
+
+<script>
+document.getElementById('telegramForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const botToken = "8812758809:AAHl0V4GtL_vT740MHpLbeJkkldJlC_wEXg"; 
+  const chatId = "8740627194"; 
+
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const subject = document.getElementById('subject').value || "No Subject";
+  const message = document.getElementById('message').value;
+  
+  const statusMsg = document.getElementById('statusMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  statusMsg.style.color = "blue";
+  statusMsg.innerHTML = "Sending message...";
+  submitBtn.disabled = true;
+
+  const text = `📬 *New Message from ACSN Website!*%0A%0A👤 *Name:* ${name}%0A📧 *Email:* ${email}%0A📌 *Subject:* ${subject}%0A💬 *Message:* ${message}`;
+
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${text}&parse_mode=Markdown`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      if (data.ok) {
+        statusMsg.style.color = "green";
+        statusMsg.innerHTML = "✅ Message sent successfully!";
+        document.getElementById('telegramForm').reset();
+      } else {
+        statusMsg.style.color = "red";
+        statusMsg.innerHTML = "❌ Failed to send message. Please check bot settings.";
+      }
+      submitBtn.disabled = false;
+    })
+    .catch(error => {
+      statusMsg.style.color = "red";
+      statusMsg.innerHTML = "❌ Network error. Please try again later.";
+      submitBtn.disabled = false;
+    });
+});
+</script>
+
+</body>
+
+</html>
