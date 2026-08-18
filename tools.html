@@ -2,180 +2,391 @@
 <html lang="en">
 
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="description" content="Explore ACSN Security Tools designed to improve digital safety, cyber security awareness, and online protection.">
+<title>Interactive Cybersecurity Tools | ACSN</title>
 
-<meta property="og:title" content="Security Tools - ACSN Advanced Cyber Security Network">
+<meta name="description" content="Access free, client-side cybersecurity tools including password generators, hash calculators, encoders, and encryption utilities at ACSN.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
 
-<meta property="og:description" content="Access basic, advanced, and professional security tools from ACSN.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 
-<meta property="og:image" content="logo.png">
+<style>
+/* Hint Box Styling between Hero and Tabs */
+.tools-hint-box {
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-left: 4px solid #2563eb;
+border-radius: 8px;
+padding: 18px 24px;
+margin: 30px auto 10px auto;
+max-width: 900px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
 
-<meta property="og:type" content="website">
+.tools-hint-box h2 {
+color: var(--text-primary, #ffffff);
+font-size: 1.1rem;
+margin-bottom: 6px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
 
-<meta name="keywords" content="Cyber Security, Security Tools, Digital Safety, Online Protection">
+.tools-hint-box p {
+color: var(--text-secondary, #9ca3af);
+font-size: 0.95rem;
+line-height: 1.5;
+margin: 0;
+}
 
-<meta name="author" content="ACSN">
+/* Tab Navigation Highlight & Display Styles */
+.tab-container {
+display: flex;
+justify-content: center;
+gap: 15px;
+margin: 25px 0 15px 0;
+flex-wrap: wrap;
+}
 
-<title>Security Tools - ACSN Advanced Cyber Security Network</title>
+.tab-button {
+background-color: var(--card-bg, #111827);
+color: var(--text-primary, #ffffff);
+border: 1px solid var(--border-color, #1f2937);
+padding: 12px 24px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s ease;
+font-family: 'Poppins', sans-serif;
+}
 
-<link rel="icon" href="logo.png">
+.tab-button:hover {
+border-color: #00ffcc;
+box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+}
 
-<link rel="stylesheet" href="tstyle.css">
+/* Highlighted Active Tab Style */
+.tab-button.active {
+background-color: #2563eb;
+color: #ffffff;
+border-color: #00ffcc;
+box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+}
 
+/* Tab Content Visibility Logic */
+.tab-content {
+display: none; /* Hide all tabs by default */
+}
+
+.tab-content.active {
+display: block; /* Show active tab content */
+animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+</style>
 </head>
-
 
 <body>
 
-
 <header>
-
-<img src="logo.png" alt="ACSN Website Logo" width="120" height="120">
-
-<h1>Security Tools</h1>
-
-<p>
-Explore cyber security tools designed to improve your digital safety and security awareness.
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
 </p>
 
+<img src="logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Interactive Cybersecurity Tools</h1>
+
+<p>
+Free, browser-based security calculators, encoders, generators, and threat inspection utilities.
+</p>
+
+<!-- HOME PAGE STYLE SEARCH BOX -->
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software, or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="software.html" class="primary-button">Explore Software</a>
+<a href="learning.html" class="secondary-button">Start Learning</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="hero.png" alt="ACSN Tools Illustration" class="hero-image">
+</div>
+</section>
 </header>
-
-
-
-<nav>
-
-<a href="index.html">Home</a>
-
-<a href="about.html">About</a>
-
-<a href="tools.html" class="active">Security Tools</a>
-
-<a href="software.html">Software</a>
-
-<a href="contact.html">Contact</a>
-
-</nav>
-
-
 
 <main>
 
-
-<section>
-
-<h2>Basic to Advanced and Professional Tools</h2>
-
+<!-- HINT BOX (BETWEEN HERO AND TABS) -->
+<section class="tools-hint-box">
+<h2>💡 100% Client-Side Privacy Assurance</h2>
 <p>
-This section provides security tools for users of all experience levels.
-Choose the category that best matches your needs and explore the available tools.
+All tools on ACSN run entirely inside your browser. No input data, passwords, or hashes are sent to our servers or saved anywhere online.
 </p>
+</section>
 
+<!-- TAB NAVIGATION BUTTONS -->
+<div class="tab-container" role="tablist">
+<button class="tab-button active" id="tab-btn-1" onclick="switchTab('tab-1', 'tab-btn-1')" role="tab" aria-selected="true" aria-controls="tab-1">Basic Tools</button>
+<button class="tab-button" id="tab-btn-2" onclick="switchTab('tab-2', 'tab-btn-2')" role="tab" aria-selected="false" aria-controls="tab-2">Advanced Tools</button>
+<button class="tab-button" id="tab-btn-3" onclick="switchTab('tab-3', 'tab-btn-3')" role="tab" aria-selected="false" aria-controls="tab-3">Pro Tools</button>
+</div>
 
-<div role="tablist" aria-label="Security Tool Categories">
+<!-- ==================== TAB 1: BASIC TOOLS (13 TOOLS) ==================== -->
+<div id="tab-1" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-1">
 
+<section class="explore">
+<h2>1. Password &amp; Authentication Tools</h2>
+<p class="section-intro">Essential utilities for password creation, evaluation, and account security setup.</p>
+<div class="cards">
+<article class="card">
+<h3>Strong Password Generator</h3>
+<p>Generate highly secure passwords with custom lengths and character types.</p>
+<a href="../tools/basic/password-generator.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>Password Strength Evaluator</h3>
+<p>Analyze the complexity and estimated crack time of your passwords locally.</p>
+<a href="../tools/basic/password-strength.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>PIN Code Generator</h3>
+<p>Create random 4-digit or 6-digit secure PINs for mobile devices and cards.</p>
+<a href="../tools/basic/pin-code-generator.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>Password Entropy Calculator</h3>
+<p>Calculate mathematical entropy bits to measure password randomness.</p>
+<a href="../tools/basic/password-entropy-calculator.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>2FA Setup Assistant Guide</h3>
+<p>Validate authenticator keys and practice setting up multi-factor security.</p>
+<a href="../tools/basic/2fa-setup-assistant.html">Open Tool</a>
+</article>
+</div>
+</section>
 
-<button 
-type="button"
-id="basicTab"
-role="tab">
-Basic
-</button>
+<section class="explore">
+<h2>2. Privacy &amp; Text Utilities</h2>
+<p class="section-intro">Quick conversion tools for safe data formatting and URL encoding.</p>
+<div class="cards">
+<article class="card">
+<h3>Base64 Text Encoder &amp; Decoder</h3>
+<p>Encode plain text into Base64 format or convert Base64 strings back to text.</p>
+<a href="../tools/basic/base64.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>URL Encoder &amp; Decoder</h3>
+<p>Safely encode characters for web URLs or decode complex query strings.</p>
+<a href="../tools/basic/url-encoder-and-decoder.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>Text Case Converter &amp; Sanitizer</h3>
+<p>Convert text, clean content, extract data, analyze statistics, and format text instantly.</p>
+<a href="../tools/basic/text-case-converter.html">Open Tool</a>
+</article>
+</div>
+</section>
 
-
-<button 
-type="button"
-id="advancedTab"
-role="tab">
-Advanced
-</button>
-
-
-<button 
-type="button"
-id="proTab"
-role="tab">
-Professional
-</button>
-
+<section class="explore">
+<h2>3. Basic Network &amp; Safety Checks</h2>
+<p class="section-intro">Simple diagnostic utilities for browser and network verification.</p>
+<div class="cards">
+<article class="card">
+<h3>Public IP Lookup Info</h3>
+<p>View your public IP address and basic network configuration details.</p>
+<a href="../tools/basic/ip-info.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>Basic URL Safety Checker</h3>
+<p>Scan web links for suspicious domain patterns and hidden redirects.</p>
+<a href="../tools/basic/basic-url-safety-checker.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>Basic HTTPS SSL Checker</h3>
+<p>Check whether a website supports HTTPS and verify its basic secure connection status.</p>
+<a href="../tools/basic/basic-http-https.html">Open Tool</a>
+</article>
+</div>
+</section>
 
 </div>
 
+<!-- ==================== TAB 2: ADVANCED TOOLS (10 TOOLS) ==================== -->
+<div id="tab-2" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-2">
 
+<section class="explore">
+<h2>1. Cryptographic Hashes</h2>
+<p class="section-intro">Generate standard cryptographic checksums for text strings and data integrity.</p>
+<div class="cards">
+<article class="card">
+<h3>Advanced Hash Generator & Checker</h3>
+<p>Generate MD5, SHA-1, SHA-256, and SHA-512 checksums for text or files and verify data integrity.</p>
+<a href="../tools/advanced/hash-generator.html">Open Tool</a>
+</article>
+</div>
 </section>
 
-
-
-
-<section id="basicPanel">
-
-
-<h2>Basic Security Tools</h2>
-
-
-<p>
-Basic security tools will be available here.
-</p>
-
-
+<section class="explore">
+<h2>2. Data &amp; Code Utilities</h2>
+<p class="section-intro">Format conversion and data structure verification utilities.</p>
+<div class="cards">
+<article class="card">
+<h3>Text, Binary &amp; Hex Converter</h3>
+<p>Instant bidirectional conversion between text, binary, and hexadecimal code with real-time auto-detection and Unicode support.</p>
+<a href="../tools/advanced/text-to-binary.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>Advanced JWT Token Decoder &amp; Parser</h3>
+<p>Decode and analyze JWT headers, payloads, standard claims, timestamps, expiration, and algorithm information directly in your browser. Token data is processed locally, and JWT signatures are not verified.</p>
+<a href="../tools/advanced/advanced-zwt-decoder.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>JSON Formatter &amp; Validator</h3>
+<p>Format messy JSON data and validate syntax for errors directly in browser.</p>
+<a href="../tools/advanced/json-formatter.html">Open Tool</a>
+</article>
+</div>
 </section>
 
-
-
-
-<section id="advancedPanel" hidden>
-
-
-<h2>Advanced Security Tools</h2>
-
-
-<p>
-Advanced security tools will be available here.
-</p>
-
-
+<section class="explore">
+<h2>3. Advanced Network Audit</h2>
+<p class="section-intro">Deeper inspection tools for web servers and network parameters.</p>
+<div class="cards">
+<article class="card">
+<h3>DNS Record Lookup Tool</h3>
+<p>Check A, AAAA, CNAME, MX, TXT, and NS records associated with any domain name instantly.</p>
+<a href="../tools/advanced/dns-record.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>Subnet CIDR Calculator</h3>
+<p>Calculate IP ranges, subnet masks, broadcast addresses, wildcard masks, and usable host details for network planning instantly.</p>
+<a href="../tools/advanced/subnet-calculator.html">Open Tool</a>
+</article>
+</div>
 </section>
 
+</div>
 
+<!-- ==================== TAB 3: PRO TOOLS (5 TOOLS) ==================== -->
+<div id="tab-3" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-3">
 
-
-<section id="proPanel" hidden>
-
-
-<h2>Professional Security Tools</h2>
-
-
-<p>
-Professional security tools will be available here.
-</p>
-
-
+<section class="explore">
+<h2>1. Encryption &amp; Ciphers</h2>
+<p class="section-intro">Military-grade data encryption utilities for privacy-focused users.</p>
+<div class="cards">
+<article class="card">
+<h3>AES-256 Text Encryption &amp; Decryption</h3>
+<p>Encrypt sensitive text using custom passphrases with AES-256 algorithm.</p>
+<a href="../tools/pro/aes-256.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>Pro Image Steganography &amp; AES-256 Vault</h3>
+<p>Hide AES-256 encrypted secret text inside image pixels with master password security completely offline.</p>
+<a href="../tools/pro/image-steganography.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>RSA Key Generator & Encryption Tool</h3>
+<p>Generate RSA key pairs, encrypt secret messages with a Public Key, and decrypt them using a Private Key—all locally in your browser.</p>
+<a href="../tools/pro/rsa-key.html">Open Tool</a>
+</article>
+<article class="card">
+<h3>File Hash SHA-256 Checksum Verifier</h3>
+<p>Calculate and verify local file hashes to ensure installer files are untampered.</p>
+<a href="../tools/pro/file-chaker.html">Open Tool</a>
+</article>
+</div>
 </section>
 
+<section class="explore">
+<h2>2. Threat Analysis &amp; Forensics</h2>
+<p class="section-intro">Forensic investigation assistants for phishing emails and online fraud patterns.</p>
+<div class="cards">
+<article class="card">
+<h3>📧 Email Header Threat Analyzer</h3>
+<p>Paste raw email headers to trace originating IP, detect spoofing, and verify SPF/DKIM authentication.</p>
+<a href="../tools/pro/email-analyzer.html">Open Tool</a>
+</article>
 
+<article class="card">
+<h3>Pro Image EXIF Metadata &amp; Forensic Analyzer</h3>
+<p>Extract hidden camera parameters, GPS coordinates, capture timestamp, AI origin indicators, and strip EXIF privacy metadata client-side.</p>
+<a href="../tools/pro/image-exif-matadata.html">Open Tool</a>
+</article>
+
+<article class="card">
+<h3>Pro Browser Privacy &amp; Fingerprint Forensic Suite</h3>
+<p>Analyze how ordinary websites silently collect 25+ hardware telemetry details, battery status, graphics engines, and cryptographic browser fingerprints without requesting any special permissions.</p>
+<a href="../tools/pro/pro-browser-privacy-analyzer.html">Open Tool</a>
+</article>
+</div>
+</section>
+
+</div>
 
 </main>
 
+<footer class="footer">
+<nav class="footer-links">
+<a href="help.html">Contact</a>
+<a href="privacy-policy.html">Privacy Policy</a>
+<a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
 
-
-
-<footer>
-
-<p>
-© 2026 ACSN - Advanced Cyber Security Network. All Rights Reserved.
-</p>
-
-<p>
-Building a Safer Digital World Through Cyber Security Awareness.
-</p>
-
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
 </footer>
 
-<script src="tools.js"></script>
+<!-- TAB SWITCHING JAVASCRIPT SCRIPT -->
+<script>
+function switchTab(tabId, btnId) {
+// Hide all tab contents
+const contents = document.querySelectorAll('.tab-content');
+contents.forEach(content => content.classList.remove('active'));
+
+// Remove active highlight from all tab buttons
+const buttons = document.querySelectorAll('.tab-button');
+buttons.forEach(button => {
+button.classList.remove('active');
+button.setAttribute('aria-selected', 'false');
+});
+
+// Show selected tab content
+const selectedTab = document.getElementById(tabId);
+if (selectedTab) {
+selectedTab.classList.add('active');
+}
+
+// Highlight selected tab button
+const selectedBtn = document.getElementById(btnId);
+if (selectedBtn) {
+selectedBtn.classList.add('active');
+selectedBtn.setAttribute('aria-selected', 'true');
+}
+}
+</script>
+
+<script src="script.js"></script>
 
 </body>
 

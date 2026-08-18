@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JSON Formatter &amp; Validator | ACSN Tools</title>
+
+<meta name="description" content="Format, validate, prettify, and minify JSON data directly in your browser with real-time syntax error detection.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 950px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+.status-bar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 15px;
+background-color: #0f172a;
+padding: 10px 14px;
+border-radius: 6px;
+border: 1px solid #1e293b;
+}
+.detect-badge {
+background-color: #1e1b4b;
+color: #818cf8;
+border: 1px solid #4338ca;
+padding: 4px 10px;
+border-radius: 4px;
+font-size: 0.85rem;
+font-weight: 600;
+}
+.live-tag {
+color: #10b981;
+font-size: 0.85rem;
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.live-dot {
+width: 8px;
+height: 8px;
+background-color: #10b981;
+border-radius: 50%;
+box-shadow: 0 0 8px #10b981;
+}
+
+/* INPUT SECTION FIRST */
+.input-section {
+margin-bottom: 15px;
+}
+.editor-label {
+color: #00ffcc;
+font-size: 0.85rem;
+font-weight: 700;
+margin-bottom: 8px;
+text-transform: uppercase;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.eval-input {
+width: 100%;
+height: 220px;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #38bdf8;
+padding: 14px;
+font-size: 0.9rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+transition: all 0.2s;
+resize: vertical;
+line-height: 1.5;
+}
+.eval-input:focus {
+outline: none;
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+.eval-input.input-error {
+border-color: #ef4444 !important;
+box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+/* CONTROLS BAR */
+.controls-bar {
+display: flex;
+gap: 10px;
+margin-bottom: 20px;
+flex-wrap: wrap;
+align-items: center;
+background-color: #0f172a;
+padding: 12px 14px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+}
+.ctrl-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 9px 15px;
+font-size: 0.88rem;
+font-weight: 600;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.2s;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+.ctrl-btn:hover {
+background-color: #1d4ed8;
+}
+.ctrl-btn-sec {
+background-color: #1e293b;
+color: #9ca3af;
+border: 1px solid #334155;
+}
+.ctrl-btn-sec:hover {
+color: #ffffff;
+border-color: #2563eb;
+}
+.btn-folder {
+background-color: #0284c7;
+color: #ffffff;
+}
+.btn-folder:hover {
+background-color: #0369a1;
+}
+.btn-clear-top {
+background-color: #334155;
+color: #ffffff;
+margin-left: auto;
+}
+.btn-clear-top:hover {
+background-color: #475569;
+}
+.select-indent {
+background-color: #0f172a;
+color: #ffffff;
+border: 1px solid #334155;
+padding: 8px;
+border-radius: 6px;
+font-size: 0.85rem;
+outline: none;
+}
+
+/* RESULT PANEL CONTAINER */
+#results-container {
+display: none;
+margin-top: 20px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.25s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(8px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.error-msg {
+color: #fca5a5;
+background-color: rgba(239, 68, 68, 0.1);
+border: 1px solid #ef4444;
+padding: 12px 16px;
+border-radius: 8px;
+font-size: 0.88rem;
+font-weight: 500;
+margin-bottom: 20px;
+display: none;
+line-height: 1.5;
+}
+.stats-card {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+padding: 12px 16px;
+border-radius: 8px;
+display: flex;
+gap: 20px;
+font-size: 0.85rem;
+color: #9ca3af;
+margin-bottom: 20px;
+flex-wrap: wrap;
+}
+.stat-item strong {
+color: #00ffcc;
+}
+
+.button-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-top: 15px;
+}
+@media (max-width: 600px) {
+.button-grid {
+grid-template-columns: 1fr;
+}
+.btn-clear-top {
+margin-left: 0;
+width: 100%;
+}
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 12px;
+font-size: 0.95rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-1px);
+}
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px 18px;
+background-color: rgba(16, 185, 129, 0.15);
+border: 1px solid #10b981;
+border-radius: 8px;
+display: none;
+text-align: center;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+animation: toastIn 0.2s ease;
+}
+@keyframes toastIn {
+from { opacity: 0; transform: scale(0.95); }
+to { opacity: 1; transform: scale(1); }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>JSON Formatter &amp; Validator</h1>
+
+<p>
+Format messy JSON data, validate syntax errors, minify payloads, and download clean JSON instantly in your browser.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="JSON Formatter Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>Paste your raw JSON into the input box or click <strong>📁 Load File</strong> to upload a <code>.json</code> file. Click <strong>Format</strong> or <strong>Minify</strong> to view formatted output and statistics below.</p>
+</div>
+
+<div class="status-bar">
+<span id="detect-badge" class="detect-badge">🔍 Status: Waiting for Input...</span>
+<span class="live-tag"><span class="live-dot"></span> Processed locally in your browser</span>
+</div>
+
+<!-- 1. INPUT BOX FIRST -->
+<div class="input-section">
+  <div class="editor-label">Input Raw JSON</div>
+  <textarea id="raw-json" class="eval-input" placeholder='Paste raw JSON here... e.g. {"name":"John","age":30,"city":"Delhi"}' oninput="handleInput()"></textarea>
+</div>
+
+<!-- 2. ACTION CONTROLS BAR -->
+<div class="controls-bar">
+  <button type="button" class="ctrl-btn btn-folder" onclick="document.getElementById('file-input').click()">📁 Load File</button>
+  <input type="file" id="file-input" accept=".json,.txt" style="display: none;" onclick="this.value=null" onchange="loadFile(event)">
+
+  <button type="button" class="ctrl-btn" onclick="formatJSON()">✨ Format / Prettify</button>
+  <button type="button" class="ctrl-btn ctrl-btn-sec" onclick="minifyJSON()">⚡ Minify</button>
+  <button type="button" class="ctrl-btn ctrl-btn-sec" onclick="validateJSON()">✅ Validate Syntax</button>
+
+  <label style="color: #9ca3af; font-size: 0.85rem;">Indent: 
+    <select id="indent-select" class="select-indent" onchange="formatJSON()">
+      <option value="2">2 Spaces</option>
+      <option value="4" selected>4 Spaces</option>
+      <option value="tab">Tab</option>
+    </select>
+  </label>
+
+  <button type="button" class="ctrl-btn btn-clear-top" onclick="clearAll()">🧹 Clear All</button>
+</div>
+
+<!-- 3. DYNAMIC RESULT PANEL CONTAINER -->
+<div id="results-container">
+
+  <!-- ERROR BANNER -->
+  <div id="error-msg" class="error-msg"></div>
+
+  <!-- FORMATTED OUTPUT AREA -->
+  <div class="editor-box">
+    <div class="editor-label">Formatted Output</div>
+    <textarea id="formatted-json" class="eval-input" style="height: 280px;" placeholder="Formatted JSON output will appear here..." readonly></textarea>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-card" style="margin-top: 15px;">
+    <div class="stat-item">Size: <strong id="stat-size">0 B</strong></div>
+    <div class="stat-item">Lines: <strong id="stat-lines">0</strong></div>
+    <div class="stat-item">Type: <strong id="stat-type">-</strong></div>
+  </div>
+
+  <!-- RESULT ACTION BUTTONS -->
+  <div class="button-grid">
+    <button type="button" class="action-btn" onclick="copyFormatted()">📋 Copy JSON</button>
+    <button type="button" class="action-btn" onclick="downloadJSON()">💾 Download JSON</button>
+  </div>
+
+</div>
+
+<!-- TOAST NOTIFICATION -->
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let inputTimeout = null;
+
+function playSound(type = 'copy') {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+
+    if (type === 'copy') {
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(987.77, audioCtx.currentTime + 0.06);
+
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.12);
+    } else {
+      osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.05);
+
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+  } catch (e) {}
+}
+
+function showResultsPanel() {
+  document.getElementById('results-container').style.display = 'block';
+}
+
+function hideResultsPanel() {
+  document.getElementById('results-container').style.display = 'none';
+}
+
+function handleInput() {
+  clearTimeout(inputTimeout);
+  inputTimeout = setTimeout(() => {
+    const val = document.getElementById('raw-json').value.trim();
+    const badge = document.getElementById('detect-badge');
+    const outEl = document.getElementById('formatted-json');
+    
+    clearError();
+    
+    if (!val) {
+      badge.innerText = "🔍 Status: Waiting for Input...";
+      outEl.value = "";
+      updateStats("", null);
+      hideResultsPanel();
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(val);
+      badge.innerText = "✅ Status: Valid JSON";
+    } catch (err) {
+      badge.innerText = "❌ Status: Invalid JSON Syntax";
+    }
+  }, 200);
+}
+
+function getIndent() {
+  const val = document.getElementById('indent-select').value;
+  return val === 'tab' ? '\t' : parseInt(val, 10);
+}
+
+function formatJSON() {
+  const val = document.getElementById('raw-json').value.trim();
+  if (!val) return;
+
+  try {
+    const parsed = JSON.parse(val);
+    const indent = getIndent();
+    const formatted = JSON.stringify(parsed, null, indent);
+    document.getElementById('formatted-json').value = formatted;
+    document.getElementById('detect-badge').innerText = "⚡ Status: Formatted Successfully";
+    clearError();
+    updateStats(formatted, parsed);
+    showResultsPanel();
+    playSound('copy');
+  } catch (err) {
+    showError("JSON Syntax Error: " + err.message);
+    document.getElementById('detect-badge').innerText = "❌ Status: Invalid JSON";
+    document.getElementById('formatted-json').value = "";
+    showResultsPanel();
+  }
+}
+
+function minifyJSON() {
+  const val = document.getElementById('raw-json').value.trim();
+  if (!val) return;
+
+  try {
+    const parsed = JSON.parse(val);
+    const minified = JSON.stringify(parsed);
+    document.getElementById('formatted-json').value = minified;
+    document.getElementById('detect-badge').innerText = "⚡ Status: Minified Successfully";
+    clearError();
+    updateStats(minified, parsed);
+    showResultsPanel();
+    playSound('copy');
+  } catch (err) {
+    showError("JSON Syntax Error: " + err.message);
+    document.getElementById('detect-badge').innerText = "❌ Status: Invalid JSON";
+    document.getElementById('formatted-json').value = "";
+    showResultsPanel();
+  }
+}
+
+function validateJSON() {
+  const val = document.getElementById('raw-json').value.trim();
+  if (!val) {
+    showError("Please enter JSON data to validate.");
+    showResultsPanel();
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(val);
+    clearError();
+    document.getElementById('detect-badge').innerText = "✅ Status: JSON is Valid!";
+    
+    // Auto-format into output panel on successful validation
+    const indent = getIndent();
+    const formatted = JSON.stringify(parsed, null, indent);
+    document.getElementById('formatted-json').value = formatted;
+    updateStats(formatted, parsed);
+    
+    showToast("✅ Valid JSON syntax!");
+    showResultsPanel();
+    playSound('copy');
+  } catch (err) {
+    showError("Invalid JSON Syntax: " + err.message);
+    document.getElementById('detect-badge').innerText = "❌ Status: Invalid JSON Syntax";
+    showResultsPanel();
+  }
+}
+
+function loadFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('raw-json').value = e.target.result;
+    handleInput();
+    formatJSON();
+    showToast("📁 File loaded successfully!");
+  };
+  reader.readAsText(file);
+}
+
+function downloadJSON() {
+  const text = document.getElementById('formatted-json').value || document.getElementById('raw-json').value;
+  if (!text) {
+    alert("Nothing to download!");
+    return;
+  }
+
+  playSound('copy');
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'formatted-data.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("💾 Download started: formatted-data.json");
+}
+
+function updateStats(str, parsedObj) {
+  if (!str) {
+    document.getElementById('stat-size').innerText = "0 B";
+    document.getElementById('stat-lines').innerText = "0";
+    document.getElementById('stat-type').innerText = "-";
+    return;
+  }
+
+  const bytes = new Blob([str]).size;
+  const sizeStr = bytes > 1024 ? (bytes / 1024).toFixed(2) + " KB" : bytes + " B";
+  const lines = str.split('\n').length;
+  
+  let type = "Primitive";
+  if (Array.isArray(parsedObj)) type = `Array (${parsedObj.length} items)`;
+  else if (typeof parsedObj === 'object' && parsedObj !== null) type = `Object (${Object.keys(parsedObj).length} keys)`;
+
+  document.getElementById('stat-size').innerText = sizeStr;
+  document.getElementById('stat-lines').innerText = lines;
+  document.getElementById('stat-type').innerText = type;
+}
+
+function showError(msg) {
+  const inputEl = document.getElementById('raw-json');
+  const errorEl = document.getElementById('error-msg');
+  
+  inputEl.classList.add('input-error');
+  errorEl.innerText = "⚠️ " + msg;
+  errorEl.style.display = 'block';
+}
+
+function clearError() {
+  const inputEl = document.getElementById('raw-json');
+  const errorEl = document.getElementById('error-msg');
+  
+  inputEl.classList.remove('input-error');
+  errorEl.style.display = 'none';
+}
+
+function copyFormatted() {
+  const text = document.getElementById('formatted-json').value || document.getElementById('raw-json').value;
+  if (!text) {
+    alert("Nothing to copy!");
+    return;
+  }
+  
+  playSound('copy');
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("📋 JSON copied to clipboard!");
+  }).catch(() => {
+    alert("Clipboard permission denied.");
+  });
+}
+
+function clearAll() {
+  playSound('clear');
+  document.getElementById('raw-json').value = "";
+  document.getElementById('formatted-json').value = "";
+  document.getElementById('detect-badge').innerText = "🔍 Status: Waiting for Input...";
+  document.getElementById('file-input').value = "";
+  clearError();
+  updateStats("", null);
+  hideResultsPanel();
+  showToast("🧹 Cleared all inputs!");
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2500);
+}
+</script>
+
+</body>
+
+</html>

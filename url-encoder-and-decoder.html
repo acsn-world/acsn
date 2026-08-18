@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>URL Encoder & Decoder | ACSN Tools</title>
+
+<meta name="description" content="Encode and decode URLs locally in your browser while preserving the main URL structure.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 800px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+.mode-instruction {
+text-align: center;
+color: #f59e0b;
+background-color: rgba(245, 158, 11, 0.1);
+border: 1px dashed #f59e0b;
+padding: 12px;
+border-radius: 8px;
+font-weight: 600;
+margin-bottom: 15px;
+}
+
+.tab-selection {
+display: flex;
+gap: 12px;
+margin-bottom: 20px;
+}
+.tab-btn {
+flex: 1;
+padding: 14px;
+background-color: #0f172a;
+color: #9ca3af;
+border: 2px solid #334155;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 700;
+font-size: 0.95rem;
+transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.tab-btn:hover {
+border-color: #2563eb;
+color: #ffffff;
+}
+.tab-btn.active {
+background-color: #1e293b;
+color: #00ffcc;
+border-color: #00ffcc;
+box-shadow: 0 0 18px rgba(0, 255, 204, 0.35);
+transform: translateY(-2px);
+}
+
+.active-mode-badge {
+background-color: #1e1b4b;
+color: #818cf8;
+border: 1px solid #4338ca;
+padding: 8px 14px;
+border-radius: 6px;
+font-size: 0.9rem;
+font-weight: 600;
+margin-bottom: 15px;
+display: inline-block;
+}
+
+.mode-card {
+background-color: #0f172a;
+padding: 20px;
+border-radius: 10px;
+border: 2px solid #1e293b;
+transition: border-color 0.3s ease;
+}
+.mode-card.highlight {
+border-color: #2563eb;
+box-shadow: 0 0 15px rgba(37, 99, 235, 0.2);
+}
+
+.input-wrapper {
+position: relative;
+margin: 15px 0;
+}
+.eval-textarea {
+width: 100%;
+min-height: 110px;
+background-color: #1e293b;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 1rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+transition: border-color 0.2s;
+resize: vertical;
+}
+.eval-textarea:focus {
+outline: none;
+border-color: #00ffcc;
+}
+
+.result-card {
+background-color: #1e293b;
+padding: 18px;
+border-radius: 8px;
+border: 1px solid #334155;
+margin-top: 15px;
+}
+.result-card .label {
+color: #9ca3af;
+font-size: 0.85rem;
+margin-bottom: 8px;
+}
+.result-display {
+color: #00ffcc;
+font-family: monospace;
+font-size: 1rem;
+word-break: break-all;
+white-space: pre-wrap;
+min-height: 24px;
+}
+
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px 20px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+width: 100%;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+}
+.btn-copy {
+background-color: #2563eb;
+margin-top: 12px;
+}
+.btn-copy.copied {
+background-color: #10b981;
+}
+
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px;
+background-color: rgba(16, 185, 129, 0.1);
+border: 1px solid rgba(16, 185, 129, 0.3);
+border-radius: 6px;
+display: none;
+text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>URL Encoder &amp; Decoder</h1>
+
+<p>Safely encode characters for web URLs or decode complex query strings.</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="URL Tool Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>
+<strong>🔗 Encode Mode:</strong> Encodes special characters in a URL while preserving its main URL structure.<br>
+<strong>🔓 Decode Mode:</strong> Decodes percent-encoded characters in a URL back into readable text.
+</p>
+</div>
+
+<div id="no-mode-msg" class="mode-instruction">
+👇 Please select an option below to activate the Tool!
+</div>
+
+<div class="tab-selection">
+<button class="tab-btn" id="tab-enc" onclick="switchTab('enc')">🔗 Mode 1: Encode URL</button>
+<button class="tab-btn" id="tab-dec" onclick="switchTab('dec')">🔓 Mode 2: Decode URL</button>
+</div>
+
+<div id="active-mode-indicator" style="display: none;">
+<span class="active-mode-badge" id="active-mode-badge">⚡ Currently Active Mode</span>
+</div>
+
+<div id="generator-body" style="display: none;">
+
+<div id="section-encode" class="mode-card" style="display: none;">
+<label style="color: #ffffff; font-weight: 600; font-size: 1rem;">Enter Full URL to Encode:</label>
+<div class="input-wrapper">
+<textarea id="input-encode" class="eval-textarea" placeholder="Type or paste a complete URL... e.g., https://example.com/search?q=hello world" oninput="resetResultStatus('enc')"></textarea>
+</div>
+
+<button class="action-btn" onclick="processURL('enc')">🔗 Encode URL</button>
+
+<div class="result-card">
+<div class="label">Encoded URL Output</div>
+<div class="result-display" id="output-encode" style="color: #9ca3af;">Click 'Encode URL' button to convert...</div>
+<button id="copy-btn-enc" class="action-btn btn-copy" onclick="copyToClipboard('output-encode', 'copy-btn-enc')" style="display: none;">📋 Copy Output</button>
+</div>
+</div>
+
+<div id="section-decode" class="mode-card" style="display: none;">
+<label style="color: #ffffff; font-weight: 600; font-size: 1rem;">Enter Encoded URL to Decode:</label>
+<div class="input-wrapper">
+<textarea id="input-decode" class="eval-textarea" placeholder="Type or paste an encoded URL... e.g., https://example.com/search?q=hello%20world" oninput="resetResultStatus('dec')"></textarea>
+</div>
+
+<button class="action-btn" onclick="processURL('dec')">🔓 Decode URL</button>
+
+<div class="result-card">
+<div class="label">Decoded URL Output</div>
+<div class="result-display" id="output-decode" style="color: #9ca3af;">Click 'Decode URL' button to convert...</div>
+<button id="copy-btn-dec" class="action-btn btn-copy" onclick="copyToClipboard('output-decode', 'copy-btn-dec')" style="display: none;">📋 Copy Output</button>
+</div>
+</div>
+
+</div>
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+const URLTool = (() => {
+function playCyberSound() {
+try {
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+
+osc.type = 'sine';
+osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.08);
+
+gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+
+osc.start();
+osc.stop(audioCtx.currentTime + 0.08);
+} catch (e) {}
+}
+
+function encodeURL(str) {
+return encodeURI(str);
+}
+
+function decodeURL(str) {
+return decodeURI(str);
+}
+
+return {
+playSound: playCyberSound,
+encode: encodeURL,
+decode: decodeURL
+};
+})();
+
+function resetAllModesData() {
+document.getElementById('input-encode').value = "";
+document.getElementById('input-decode').value = "";
+
+resetResultStatus('enc');
+resetResultStatus('dec');
+}
+
+function resetResultStatus(mode) {
+if (mode === 'enc') {
+const out = document.getElementById('output-encode');
+out.style.color = "#9ca3af";
+out.innerText = "Click 'Encode URL' button to convert...";
+document.getElementById('copy-btn-enc').style.display = 'none';
+} else {
+const out = document.getElementById('output-decode');
+out.style.color = "#9ca3af";
+out.innerText = "Click 'Decode URL' button to convert...";
+document.getElementById('copy-btn-dec').style.display = 'none';
+}
+}
+
+function switchTab(mode) {
+URLTool.playSound();
+resetAllModesData();
+
+document.getElementById('no-mode-msg').style.display = 'none';
+document.getElementById('generator-body').style.display = 'block';
+document.getElementById('active-mode-indicator').style.display = 'block';
+
+const badge = document.getElementById('active-mode-badge');
+const btnEnc = document.getElementById('tab-enc');
+const btnDec = document.getElementById('tab-dec');
+
+const secEnc = document.getElementById('section-encode');
+const secDec = document.getElementById('section-decode');
+
+if (mode === 'enc') {
+btnEnc.classList.add('active');
+btnDec.classList.remove('active');
+
+secEnc.style.display = 'block';
+secEnc.classList.add('highlight');
+secDec.style.display = 'none';
+
+badge.innerText = "⚡ Active Mode: 🔗 Encode URL";
+} else if (mode === 'dec') {
+btnDec.classList.add('active');
+btnEnc.classList.remove('active');
+
+secDec.style.display = 'block';
+secDec.classList.add('highlight');
+secEnc.style.display = 'none';
+
+badge.innerText = "⚡ Active Mode: 🔓 Decode URL";
+}
+}
+
+function processURL(mode) {
+if (mode === 'enc') {
+const val = document.getElementById('input-encode').value;
+const out = document.getElementById('output-encode');
+const copyBtn = document.getElementById('copy-btn-enc');
+
+if (!val.trim()) {
+out.style.color = "#ef4444";
+out.innerText = "❌ Please enter a URL to encode!";
+copyBtn.style.display = 'none';
+return;
+}
+
+URLTool.playSound();
+try {
+const encoded = URLTool.encode(val);
+out.style.color = "#00ffcc";
+out.innerText = encoded;
+copyBtn.style.display = 'inline-flex';
+showToast("⚡ URL Encoded Successfully!");
+} catch (e) {
+out.style.color = "#ef4444";
+out.innerText = "❌ Encoding failed! Please check the input and try again.";
+copyBtn.style.display = 'none';
+}
+} else {
+const val = document.getElementById('input-decode').value.trim();
+const out = document.getElementById('output-decode');
+const copyBtn = document.getElementById('copy-btn-dec');
+
+if (!val) {
+out.style.color = "#ef4444";
+out.innerText = "❌ Please enter an encoded URL to decode!";
+copyBtn.style.display = 'none';
+return;
+}
+
+URLTool.playSound();
+try {
+const decoded = URLTool.decode(val);
+out.style.color = "#00ffcc";
+out.innerText = decoded;
+copyBtn.style.display = 'inline-flex';
+showToast("⚡ URL Decoded Successfully!");
+} catch (e) {
+out.style.color = "#ef4444";
+out.innerText = "❌ Invalid URL encoding! Please check the percent-encoded characters.";
+copyBtn.style.display = 'none';
+}
+}
+}
+
+function copyToClipboard(elementId, btnId) {
+const text = document.getElementById(elementId).innerText;
+if (!text || text.includes("Click") || text.includes("❌")) return;
+
+URLTool.playSound();
+
+function handleCopySuccess() {
+const copyBtn = document.getElementById(btnId);
+copyBtn.innerHTML = "✅ Copied to Clipboard!";
+copyBtn.classList.add('copied');
+showToast("✅ Output copied to clipboard!");
+
+setTimeout(() => {
+copyBtn.innerHTML = "📋 Copy Output";
+copyBtn.classList.remove('copied');
+}, 3000);
+}
+
+if (navigator.clipboard && window.isSecureContext) {
+navigator.clipboard.writeText(text)
+.then(handleCopySuccess)
+.catch(() => fallbackCopyText(text, handleCopySuccess));
+} else {
+fallbackCopyText(text, handleCopySuccess);
+}
+}
+
+function fallbackCopyText(text, callback) {
+const textArea = document.createElement("textarea");
+textArea.value = text;
+textArea.style.position = "fixed";
+textArea.style.left = "-999999px";
+document.body.appendChild(textArea);
+textArea.focus();
+textArea.select();
+try {
+document.execCommand('copy');
+callback();
+} catch (err) {
+showToast("❌ Copy failed. Please copy manually.");
+}
+document.body.removeChild(textArea);
+}
+
+function showToast(message) {
+const toast = document.getElementById('toast-msg');
+toast.innerText = message;
+toast.style.display = 'block';
+setTimeout(() => {
+toast.style.display = 'none';
+}, 3000);
+}
+</script>
+
+</body>
+
+</html>

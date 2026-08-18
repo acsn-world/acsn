@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>File Hash SHA-256 Checksum Verifier | ACSN Tools</title>
+
+<meta name="description" content="Calculate and verify local file SHA-256 hashes to ensure installer files and downloads are authentic and untampered.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 900px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* FILE DROP AREA */
+.file-drop-area {
+border: 2px dashed #334155;
+border-radius: 8px;
+padding: 30px;
+text-align: center;
+background-color: #0f172a;
+cursor: pointer;
+transition: all 0.2s;
+margin-bottom: 20px;
+}
+.file-drop-area:hover, .file-drop-area.drag-over {
+border-color: #00ffcc;
+background-color: #1e293b;
+}
+.file-drop-area p {
+color: #9ca3af;
+margin: 8px 0 0 0;
+font-size: 0.95rem;
+}
+
+/* INPUTS STYLING */
+.input-wrapper {
+position: relative;
+margin: 15px 0;
+}
+.input-label {
+color: #00ffcc;
+font-size: 0.88rem;
+font-weight: 600;
+margin-bottom: 6px;
+display: block;
+}
+.eval-input {
+width: 100%;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 0.95rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+outline: none;
+transition: all 0.2s;
+}
+.eval-input:focus {
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* BUTTON GRID */
+.button-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-top: 20px;
+margin-bottom: 20px;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px;
+font-size: 0.95rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-1px);
+}
+.btn-clear {
+background-color: #334155;
+}
+.btn-clear:hover {
+background-color: #475569;
+}
+
+/* RESULTS PANEL */
+#results-container {
+display: none;
+margin-top: 25px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.result-card {
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+margin-bottom: 20px;
+}
+.result-header {
+margin-bottom: 10px;
+}
+.result-title {
+color: #00ffcc;
+font-weight: 700;
+font-size: 0.95rem;
+}
+
+.result-value {
+color: #38bdf8;
+font-family: monospace;
+font-size: 0.88rem;
+white-space: pre-wrap;
+word-break: break-all;
+background-color: #0b0f19;
+padding: 14px;
+border-radius: 6px;
+border: 1px solid #1e293b;
+min-height: 40px;
+line-height: 1.5;
+margin-bottom: 0;
+}
+
+/* MATCH STATUS STYLING */
+.match-status {
+padding: 14px;
+border-radius: 8px;
+font-weight: 700;
+text-align: center;
+display: none;
+margin-bottom: 15px;
+font-size: 0.95rem;
+}
+.match-success {
+background-color: rgba(16, 185, 129, 0.15);
+color: #10b981;
+border: 1px solid #10b981;
+}
+.match-error {
+background-color: rgba(239, 68, 68, 0.15);
+color: #ef4444;
+border: 1px solid #ef4444;
+}
+
+.loader {
+display: none;
+text-align: center;
+padding: 20px;
+color: #38bdf8;
+font-weight: 600;
+}
+
+.error-box {
+background-color: rgba(239, 68, 68, 0.15);
+border: 1px solid #ef4444;
+color: #fca5a5;
+padding: 12px 16px;
+border-radius: 8px;
+margin-top: 15px;
+display: none;
+font-size: 0.9rem;
+line-height: 1.5;
+}
+
+/* TOAST NOTIFICATION */
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px 18px;
+background-color: rgba(16, 185, 129, 0.15);
+border: 1px solid #10b981;
+border-radius: 8px;
+display: none;
+text-align: center;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>File Hash SHA-256 Checksum Verifier</h1>
+
+<p>
+Calculate and verify local file hashes to ensure installer files are untampered.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="File Hash Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>Select any installer file from your device to calculate its <strong>SHA-256 Checksum</strong> locally. Optionally paste an expected SHA-256 hash to verify file integrity instantly.</p>
+</div>
+
+<!-- FILE SELECTION & DRAG DROP AREA -->
+<div class="file-drop-area" id="drop-zone" onclick="document.getElementById('file-input').click()">
+  <span style="font-size: 2.5rem;">📁</span>
+  <p id="file-label">Click or Drag &amp; Drop file here to calculate SHA-256 Hash</p>
+  <input type="file" id="file-input" style="display: none;" onchange="handleFileSelect(this)">
+</div>
+
+<!-- EXPECTED CHECKSUM VERIFICATION (OPTIONAL) -->
+<div class="input-wrapper">
+  <label class="input-label">🔍 Expected SHA-256 Checksum (Optional for verification):</label>
+  <input type="text" id="expected-hash-input" class="eval-input" placeholder="Paste expected 64-character SHA-256 hash here..." oninput="verifyChecksumLive()">
+</div>
+
+<!-- BUTTONS -->
+<div class="button-grid">
+  <button type="button" class="action-btn" onclick="calculateFileHash()">⚡ Calculate SHA-256 Checksum</button>
+  <button type="button" class="action-btn btn-clear" onclick="clearAll(false)">🧹 Clear All</button>
+</div>
+
+<!-- LOADER -->
+<div id="loader" class="loader">
+  ⚙️ Calculating File SHA-256 Checksum... Please wait.
+</div>
+
+<!-- ERROR BOX -->
+<div id="error-box" class="error-box"></div>
+
+<!-- RESULTS AREA -->
+<div id="results-container">
+  
+  <!-- MATCH STATUS NOTICE -->
+  <div id="match-status" class="match-status"></div>
+
+  <div class="result-card">
+    <div class="result-header">
+      <span class="result-title">🔒 Calculated File SHA-256 Hash</span>
+    </div>
+    <div class="result-value" id="res-hash-value">-</div>
+  </div>
+
+</div>
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let selectedFile = null;
+let calculatedHash = "";
+
+function playSound(type = 'action') {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    if (type === 'action') {
+      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+    } else {
+      osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.05);
+    }
+
+    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.08);
+  } catch (e) {}
+}
+
+// SETUP DRAG AND DROP EVENTS
+const dropZone = document.getElementById('drop-zone');
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+  dropZone.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, false);
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+  dropZone.addEventListener(eventName, () => dropZone.classList.add('drag-over'), false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+  dropZone.addEventListener(eventName, () => dropZone.classList.remove('drag-over'), false);
+});
+
+dropZone.addEventListener('drop', (e) => {
+  const dt = e.dataTransfer;
+  if (dt.files && dt.files.length > 0) {
+    document.getElementById('file-input').files = dt.files;
+    handleFileSelect(document.getElementById('file-input'));
+  }
+}, false);
+
+function handleFileSelect(input) {
+  if (input.files && input.files[0]) {
+    selectedFile = input.files[0];
+    const fileSizeMb = (selectedFile.size / (1024 * 1024)).toFixed(2);
+    document.getElementById('file-label').innerText = `📄 Selected: ${selectedFile.name} (${fileSizeMb} MB)`;
+    hideError();
+  }
+}
+
+// CRASH-PROOF & MEMORY-SAFE FILE HASH CALCULATION
+async function calculateFileHash() {
+  playSound('action');
+
+  const loader = document.getElementById('loader');
+  const resultsContainer = document.getElementById('results-container');
+
+  hideError();
+
+  if (!selectedFile) {
+    showError("⚠️ Please select a file first!");
+    return;
+  }
+
+  loader.style.display = 'block';
+  resultsContainer.style.display = 'none';
+
+  try {
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    const hashBuffer = await window.crypto.subtle.digest("SHA-256", arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    calculatedHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    document.getElementById('res-hash-value').innerText = calculatedHash;
+
+    loader.style.display = 'none';
+    resultsContainer.style.display = 'block';
+    
+    verifyChecksumLive();
+    showToast("✅ SHA-256 Checksum calculated!");
+
+  } catch (err) {
+    loader.style.display = 'none';
+    showError("❌ Failed to process file hash: " + err.message);
+  }
+}
+
+// VERIFY CHECKSUM MATCH
+function verifyChecksumLive() {
+  const expectedHash = document.getElementById('expected-hash-input').value.trim().toLowerCase();
+  const matchStatus = document.getElementById('match-status');
+
+  if (!calculatedHash || !expectedHash) {
+    matchStatus.style.display = 'none';
+    return;
+  }
+
+  matchStatus.style.display = 'block';
+
+  if (expectedHash === calculatedHash.toLowerCase()) {
+    matchStatus.className = "match-status match-success";
+    matchStatus.innerText = "✅ CHECKSUM MATCHED! The file is authentic and untampered.";
+  } else {
+    matchStatus.className = "match-status match-error";
+    matchStatus.innerText = "❌ CHECKSUM MISMATCH! File may be corrupted, modified, or incorrect.";
+  }
+}
+
+function showError(msg) {
+  const errorBox = document.getElementById('error-box');
+  errorBox.innerText = msg;
+  errorBox.style.display = 'block';
+}
+
+function hideError() {
+  const errorBox = document.getElementById('error-box');
+  errorBox.style.display = 'none';
+}
+
+function clearAll(isSilent = false) {
+  if (!isSilent) playSound('clear');
+
+  selectedFile = null;
+  calculatedHash = "";
+
+  document.getElementById('file-input').value = "";
+  document.getElementById('file-label').innerText = "Click or Drag & Drop file here to calculate SHA-256 Hash";
+  document.getElementById('expected-hash-input').value = "";
+
+  document.getElementById('results-container').style.display = 'none';
+  document.getElementById('res-hash-value').innerText = "-";
+  document.getElementById('match-status').style.display = 'none';
+
+  hideError();
+  if (!isSilent) showToast("🧹 All fields cleared!");
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2500);
+}
+</script>
+
+</body>
+
+</html>

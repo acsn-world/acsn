@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>IP Address Lookup | ACSN Tools</title>
+
+<meta name="description" content="Instantly detect your public IP address or search any IP to uncover geographical location, ISP network details, and security status safely.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 800px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+.input-wrapper {
+position: relative;
+margin: 20px 0 15px 0;
+}
+.eval-input {
+width: 100%;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 1.1rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+transition: border-color 0.2s;
+}
+.eval-input:focus {
+outline: none;
+border-color: #2563eb;
+}
+.button-group-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 12px;
+margin-bottom: 20px;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+}
+.btn-own-ip {
+background-color: #0891b2;
+}
+.btn-own-ip:hover {
+background-color: #0e7490;
+}
+.btn-copy {
+background-color: #059669;
+margin-top: 15px;
+width: 100%;
+font-size: 1rem;
+}
+.btn-copy:hover {
+background-color: #047857;
+}
+.btn-copy.copied {
+background-color: #10b981;
+}
+.grid-stats {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 15px;
+margin-top: 20px;
+}
+.stat-card {
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+}
+.stat-card .label {
+color: #9ca3af;
+font-size: 0.85rem;
+margin-bottom: 6px;
+}
+.stat-card .value {
+color: #ffffff;
+font-size: 1.1rem;
+font-weight: 700;
+word-break: break-all;
+}
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 12px;
+padding: 10px 14px;
+background-color: rgba(16, 185, 129, 0.1);
+border: 1px solid rgba(16, 185, 129, 0.3);
+border-radius: 6px;
+display: none;
+text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>IP Address Lookup</h1>
+
+<p>
+Instantly detect your public IP address or search any custom IP to uncover geographical location, ISP network details, and security status safely.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="IP Address Lookup Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>If you want to check your own public IP, click <strong>"🎯 Detect My Own IP"</strong> — your IP will automatically fill into the box and display its location and network details below. To check another IP, type or paste it into the empty box and click <strong>"🔍 Search Custom IP"</strong>.</p>
+</div>
+
+<div class="input-wrapper">
+<input type="text" id="ip-input" class="eval-input" placeholder="Enter any IP address (e.g., 8.8.8.8)..." autocomplete="off">
+</div>
+
+<div class="button-group-grid">
+<button class="action-btn" onclick="lookupCustomIP()">
+🔍 Search Custom IP
+</button>
+<button class="action-btn btn-own-ip" onclick="detectOwnIP()">
+🎯 Detect My Own IP
+</button>
+</div>
+
+<div id="result-section" style="display: none;">
+
+<div class="grid-stats">
+<div class="stat-card">
+<div class="label">IP Address</div>
+<div class="value" id="res-ip" style="color: #00ffcc;">-</div>
+</div>
+<div class="stat-card">
+<div class="label">Country / Location</div>
+<div class="value" id="res-location">-</div>
+</div>
+<div class="stat-card">
+<div class="label">City / Region</div>
+<div class="value" id="res-city">-</div>
+</div>
+<div class="stat-card">
+<div class="label">Internet Service Provider (ISP)</div>
+<div class="value" id="res-isp" style="color: #2563eb;">-</div>
+</div>
+<div class="stat-card">
+<div class="label">Timezone</div>
+<div class="value" id="res-timezone">-</div>
+</div>
+<div class="stat-card">
+<div class="label">Organization / AS</div>
+<div class="value" id="res-org">-</div>
+</div>
+</div>
+
+<button id="copy-btn" class="action-btn btn-copy" onclick="copyIPDetails()">📋 Copy IP Details</button>
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let currentFetchedDetails = "";
+
+function playClickSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
+    osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.05);
+
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) {}
+}
+
+function fetchIPData(ipQuery = "", fillInput = false) {
+  document.getElementById('result-section').style.display = 'block';
+  document.getElementById('res-ip').innerText = "Fetching...";
+  document.getElementById('res-location').innerText = "Loading...";
+  document.getElementById('res-city').innerText = "Loading...";
+  document.getElementById('res-isp').innerText = "Loading...";
+  document.getElementById('res-timezone').innerText = "Loading...";
+  document.getElementById('res-org').innerText = "Loading...";
+  hideToast();
+
+  const cleanIp = ipQuery.trim();
+
+  // Primary API with HTTPS & CORS-friendly endpoint
+  const primaryUrl = cleanIp !== "" 
+    ? `https://ipwho.is/${encodeURIComponent(cleanIp)}`
+    : `https://ipwho.is/`;
+
+  fetch(primaryUrl)
+    .then(res => {
+      if (!res.ok) throw new Error("Primary API Network Response Error");
+      return res.json();
+    })
+    .then(data => {
+      if (data.success === false) throw new Error(data.message || "Invalid IP or Lookup Failed");
+      displayResults({
+        ip: data.ip || cleanIp,
+        country: `${data.country || "N/A"} (${data.country_code || "N/A"})`,
+        city: `${data.city || "N/A"}, ${data.region || "N/A"}`,
+        isp: data.connection ? data.connection.isp : "N/A",
+        timezone: data.timezone ? data.timezone.id : "N/A",
+        org: data.connection ? (data.connection.asn ? `AS${data.connection.asn} - ${data.connection.org || data.connection.isp}` : "N/A") : "N/A"
+      }, fillInput);
+    })
+    .catch(() => {
+      // Fallback API if primary fails
+      const backupUrl = cleanIp !== "" 
+        ? `https://ipapi.co/${encodeURIComponent(cleanIp)}/json/`
+        : `https://ipapi.co/json/`;
+
+      fetch(backupUrl)
+        .then(res => {
+          if (!res.ok) throw new Error("Backup API Network Response Error");
+          return res.json();
+        })
+        .then(data => {
+          if (data.error) throw new Error("Backup API Lookup Error");
+          displayResults({
+            ip: data.ip || cleanIp,
+            country: `${data.country_name || "N/A"} (${data.country_code || "N/A"})`,
+            city: `${data.city || "N/A"}, ${data.region || "N/A"}`,
+            isp: data.org || data.isp || "N/A",
+            timezone: data.timezone || "N/A",
+            org: data.asn || data.org || "N/A"
+          }, fillInput);
+        })
+        .catch(() => {
+          document.getElementById('res-ip').innerText = "Error";
+          document.getElementById('res-location').innerText = "Failed";
+          document.getElementById('res-city').innerText = "Failed";
+          document.getElementById('res-isp').innerText = "Failed";
+          document.getElementById('res-timezone').innerText = "Failed";
+          document.getElementById('res-org').innerText = "Failed";
+          alert("Unable to fetch IP details. Please check your internet connection or temporarily disable AdBlocker / Brave Shield for this page.");
+        });
+    });
+}
+
+function displayResults(data, fillInput) {
+  if (fillInput) {
+    document.getElementById('ip-input').value = data.ip;
+  }
+
+  document.getElementById('res-ip').innerText = data.ip;
+  document.getElementById('res-location').innerText = data.country;
+  document.getElementById('res-city').innerText = data.city;
+  document.getElementById('res-isp').innerText = data.isp;
+  document.getElementById('res-timezone').innerText = data.timezone;
+  document.getElementById('res-org').innerText = data.org;
+
+  currentFetchedDetails = `IP: ${data.ip}\nLocation: ${data.country}\nCity: ${data.city}\nISP: ${data.isp}\nTimezone: ${data.timezone}\nOrganization: ${data.org}`;
+
+  const copyBtn = document.getElementById('copy-btn');
+  copyBtn.innerHTML = "📋 Copy IP Details";
+  copyBtn.classList.remove('copied');
+}
+
+function lookupCustomIP() {
+  playClickSound();
+  const inputVal = document.getElementById('ip-input').value;
+  if (!inputVal.trim()) {
+    alert("Please enter a valid custom IP address in the search box first!");
+    return;
+  }
+  fetchIPData(inputVal, false);
+}
+
+function detectOwnIP() {
+  playClickSound();
+  fetchIPData("", true);
+}
+
+function copyIPDetails() {
+  playClickSound();
+  if (!currentFetchedDetails) return;
+
+  const copyBtn = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(currentFetchedDetails).then(() => {
+    copyBtn.innerHTML = "✅ Copied!";
+    copyBtn.classList.add('copied');
+    showToast("✅ IP details successfully copied to clipboard!");
+
+    setTimeout(() => {
+      copyBtn.innerHTML = "📋 Copy IP Details";
+      copyBtn.classList.remove('copied');
+    }, 3000);
+  }).catch(() => {
+    showToast("❌ Failed to copy details to clipboard.");
+  });
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+}
+
+function hideToast() {
+  const toast = document.getElementById('toast-msg');
+  toast.style.display = 'none';
+}
+</script>
+
+</body>
+
+</html>

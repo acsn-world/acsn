@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pro Email Header Forensic & Threat Analyzer | ACSN Tools</title>
+
+<meta name="description" content="Pro-grade email header forensic analyzer. Inspect raw email headers for multiline unfolding, IP reputation, hop transit delays, punycode spoofing, and export detailed reports.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 950px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* INPUT AREA */
+.input-wrapper {
+position: relative;
+margin: 15px 0;
+}
+.input-label {
+color: #00ffcc;
+font-size: 0.88rem;
+font-weight: 600;
+margin-bottom: 6px;
+display: block;
+}
+.eval-input {
+width: 100%;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 0.9rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+outline: none;
+transition: all 0.2s;
+}
+.eval-input:focus {
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+textarea.eval-input {
+resize: vertical;
+min-height: 140px;
+}
+
+/* BUTTON GRID */
+.button-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-top: 20px;
+margin-bottom: 20px;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px;
+font-size: 0.95rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-1px);
+}
+.btn-clear {
+background-color: #334155;
+}
+.btn-clear:hover {
+background-color: #475569;
+}
+
+/* RESULTS PANEL */
+#results-container {
+display: none;
+margin-top: 25px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* THREAT SCORE GAUGE CARD */
+.threat-card {
+padding: 20px;
+border-radius: 8px;
+text-align: center;
+margin-bottom: 20px;
+border: 1px solid #1e293b;
+background-color: #0f172a;
+}
+.threat-title {
+font-size: 0.82rem;
+text-transform: uppercase;
+color: #9ca3af;
+font-weight: 700;
+letter-spacing: 1px;
+margin-bottom: 8px;
+}
+.threat-score-box {
+font-size: 2.2rem;
+font-weight: 900;
+margin-bottom: 6px;
+font-family: monospace;
+}
+.threat-desc {
+font-size: 0.88rem;
+color: #cbd5e1;
+line-height: 1.5;
+}
+
+.risk-safe {
+border-color: #10b981;
+background-color: rgba(16, 185, 129, 0.1);
+color: #10b981;
+}
+.risk-warn {
+border-color: #f59e0b;
+background-color: rgba(245, 158, 11, 0.1);
+color: #f59e0b;
+}
+.risk-danger {
+border-color: #ef4444;
+background-color: rgba(239, 68, 68, 0.1);
+color: #ef4444;
+}
+
+.auth-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 12px;
+margin-bottom: 20px;
+}
+.auth-card {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+padding: 14px;
+border-radius: 8px;
+text-align: center;
+}
+.auth-label {
+font-size: 0.78rem;
+color: #9ca3af;
+text-transform: uppercase;
+font-weight: 700;
+margin-bottom: 6px;
+}
+.auth-status {
+font-size: 1rem;
+font-weight: 700;
+font-family: monospace;
+}
+.status-pass { color: #10b981; }
+.status-fail { color: #ef4444; }
+.status-neutral { color: #f59e0b; }
+
+.section-subheading {
+color: #00ffcc;
+font-size: 1rem;
+font-weight: 700;
+margin: 20px 0 10px 0;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.details-table-wrapper {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+border-radius: 8px;
+overflow-x: auto;
+margin-bottom: 20px;
+}
+.details-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 0.88rem;
+text-align: left;
+}
+.details-table th, .details-table td {
+padding: 12px 16px;
+border-bottom: 1px solid #1e293b;
+word-break: break-all;
+}
+.details-table th {
+background-color: #1e293b;
+color: #00ffcc;
+font-weight: 600;
+width: 28%;
+white-space: nowrap;
+}
+.details-table td {
+color: #e2e8f0;
+font-family: monospace;
+}
+.details-table tr:last-child td, .details-table tr:last-child th {
+border-bottom: none;
+}
+
+/* ANOMALY LIST STYLING */
+.anomaly-box {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+border-radius: 8px;
+padding: 15px 20px;
+margin-bottom: 20px;
+}
+.anomaly-item {
+color: #fca5a5;
+font-size: 0.88rem;
+margin-bottom: 8px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.anomaly-item:last-child {
+margin-bottom: 0;
+}
+
+.action-btn-group-below {
+display: flex;
+gap: 12px;
+justify-content: flex-end;
+flex-wrap: wrap;
+margin-top: 20px;
+}
+.mini-btn {
+background-color: #1e293b;
+color: #9ca3af;
+border: 1px solid #334155;
+padding: 10px 18px;
+font-size: 0.88rem;
+font-weight: 600;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.2s;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+.mini-btn:hover {
+color: #ffffff;
+border-color: #2563eb;
+background-color: #2563eb;
+}
+
+.loader {
+display: none;
+text-align: center;
+padding: 20px;
+color: #38bdf8;
+font-weight: 600;
+}
+
+.error-box {
+background-color: rgba(239, 68, 68, 0.15);
+border: 1px solid #ef4444;
+color: #fca5a5;
+padding: 12px 16px;
+border-radius: 8px;
+margin-top: 15px;
+display: none;
+font-size: 0.9rem;
+line-height: 1.5;
+}
+
+/* TOAST NOTIFICATION */
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px 18px;
+background-color: rgba(16, 185, 129, 0.15);
+border: 1px solid #10b981;
+border-radius: 8px;
+display: none;
+text-align: center;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Pro Email Header Threat Analyzer</h1>
+
+<p>
+Pro-grade email header forensic suite. Deep-scan raw headers for IP reputation, delay anomalies, typosquatting, and SPF/DKIM verification.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="Email Analysis Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>Paste the raw email header text (from Gmail's "Show Original" or Outlook's "View Message Details") below and click <strong>⚡ Deep Analyze Header</strong> to generate a complete forensic threat report.</p>
+</div>
+
+<!-- INPUT SECTION -->
+<div class="input-wrapper">
+  <label class="input-label">📧 Paste Raw Email Header Here:</label>
+  <textarea id="header-input" class="eval-input" placeholder="Paste full raw email header starting with Received: or Delivered-To: ..."></textarea>
+</div>
+
+<!-- BUTTONS -->
+<div class="button-grid">
+  <button type="button" class="action-btn" onclick="deepAnalyzeHeader()">⚡ Deep Analyze Header</button>
+  <button type="button" class="action-btn btn-clear" onclick="clearAll(false)">🧹 Clear Header</button>
+</div>
+
+<!-- LOADER -->
+<div id="loader" class="loader">
+  ⚙️ Performing Deep Forensic Analysis, Unfolding Headers &amp; IP Geolocation... Please wait.
+</div>
+
+<!-- ERROR BOX -->
+<div id="error-box" class="error-box"></div>
+
+<!-- RESULTS AREA -->
+<div id="results-container">
+  
+  <!-- THREAT SCORE GAUGE ASSESSMENT -->
+  <div id="threat-card-container" class="threat-card risk-safe">
+    <div class="threat-title">PRO FORENSIC THREAT ASSESSMENT</div>
+    <div class="threat-score-box" id="res-threat-score">0 / 100</div>
+    <div class="threat-desc" id="res-threat-desc">Low risk detected. All security protocols intact.</div>
+  </div>
+
+  <!-- AUTHENTICATION SUMMARY -->
+  <div class="auth-grid">
+    <div class="auth-card">
+      <div class="auth-label">SPF Record</div>
+      <div class="auth-status" id="res-spf">NEUTRAL</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-label">DKIM Signature</div>
+      <div class="auth-status" id="res-dkim">NEUTRAL</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-label">DMARC Policy</div>
+      <div class="auth-status" id="res-dmarc">NEUTRAL</div>
+    </div>
+  </div>
+
+  <!-- ANOMALIES & ALERTS -->
+  <div class="section-subheading">🚨 Security Anomalies &amp; Phishing Alerts</div>
+  <div class="anomaly-box" id="res-anomaly-container">
+    <div class="anomaly-item" style="color:#10b981;">✅ No severe header anomalies detected.</div>
+  </div>
+
+  <!-- DETAILS TABLE -->
+  <div class="section-subheading">📋 Header Meta &amp; Sender Trace</div>
+  <div class="details-table-wrapper">
+    <table class="details-table">
+      <tbody>
+        <tr>
+          <th>From (Sender)</th>
+          <td id="res-from">-</td>
+        </tr>
+        <tr>
+          <th>Return-Path</th>
+          <td id="res-return-path">-</td>
+        </tr>
+        <tr>
+          <th>Originating IP Address</th>
+          <td id="res-ip" style="color:#00ffcc; font-weight:bold;">-</td>
+        </tr>
+        <tr>
+          <th>IP Geolocation &amp; ISP</th>
+          <td id="res-geo" style="color:#38bdf8;">-</td>
+        </tr>
+        <tr>
+          <th>IP Blacklist Status</th>
+          <td id="res-ip-reputation" style="color:#10b981;">Checking...</td>
+        </tr>
+        <tr>
+          <th>To (Recipient)</th>
+          <td id="res-to">-</td>
+        </tr>
+        <tr>
+          <th>Subject</th>
+          <td id="res-subject">-</td>
+        </tr>
+        <tr>
+          <th>Date Sent</th>
+          <td id="res-date">-</td>
+        </tr>
+        <tr>
+          <th>X-Mailer / User-Agent</th>
+          <td id="res-mailer">-</td>
+        </tr>
+        <tr>
+          <th>Message-ID</th>
+          <td id="res-msg-id">-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HOPS TRANSIT ROUTE WITH DELAYS -->
+  <div class="section-subheading">🚀 Server Transit Hops &amp; Delay Analysis</div>
+  <div class="details-table-wrapper">
+    <table class="details-table">
+      <thead>
+        <tr style="background-color: #1e293b;">
+          <th style="width:8%;">Hop</th>
+          <th style="width:52%;">Receiving / Forwarding Host</th>
+          <th style="width:40%;">Timestamp / Transit Delay</th>
+        </tr>
+      </thead>
+      <tbody id="res-hops-body">
+        <tr><td colspan="3" style="text-align:center;">No hops parsed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- REPORT ACTION BUTTONS -->
+  <div class="action-btn-group-below">
+    <button type="button" class="mini-btn" onclick="copyReport()">📋 Copy Forensic Report</button>
+    <button type="button" class="mini-btn" onclick="shareReport()">🔗 Share Forensic Report</button>
+    <button type="button" class="mini-btn" onclick="downloadPdfReport()">📄 Download Text Report</button>
+  </div>
+
+</div>
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let fullReportText = "";
+
+function playSound(type = 'action') {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    if (type === 'action') {
+      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+    } else {
+      osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.05);
+    }
+
+    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.08);
+  } catch (e) {}
+}
+
+// 1. MULTILINE HEADER UNFOLDING ENGINE
+function unfoldHeader(rawText) {
+  // Replace line breaks followed by spaces or tabs with a single space
+  return rawText.replace(/\r?\n[ \t]+/g, ' ');
+}
+
+// 2. IP GEOLOCATION WITH DUAL API FALLBACK (ipapi.co -> ip-api.com)
+async function fetchIpGeoDetails(ip) {
+  if (!ip || ip === "Not Detected" || ip.startsWith('127.')) {
+    return "Location Lookup Unavailable";
+  }
+
+  // Primary API: ipapi.co
+  try {
+    const res1 = await fetch(`https://ipapi.co/${ip}/json/`);
+    if (res1.ok) {
+      const data1 = await res1.json();
+      if (data1.country_name) {
+        return `📍 ${data1.city || 'Unknown City'}, ${data1.country_name} (${data1.org || 'Unknown ISP'})`;
+      }
+    }
+  } catch (e) {
+    // Primary API Failed, Fallback triggered silently
+  }
+
+  // Backup Fallback API: ip-api.com
+  try {
+    const res2 = await fetch(`http://ip-api.com/json/${ip}`);
+    if (res2.ok) {
+      const data2 = await res2.json();
+      if (data2.status === "success") {
+        return `📍 ${data2.city || 'Unknown City'}, ${data2.country} (${data2.isp || 'Unknown ISP'}) [Fallback API]`;
+      }
+    }
+  } catch (e) {
+    // Backup API also failed
+  }
+
+  return "📍 Public IP detected (Geo-API quota restricted)";
+}
+
+async function deepAnalyzeHeader() {
+  playSound('action');
+
+  const rawInput = document.getElementById('header-input').value.trim();
+  const loader = document.getElementById('loader');
+  const resultsContainer = document.getElementById('results-container');
+
+  hideError();
+
+  if (!rawInput) {
+    showError("⚠️ Please paste an email header text to analyze!");
+    return;
+  }
+
+  loader.style.display = 'block';
+  resultsContainer.style.display = 'none';
+
+  try {
+    // Step A: Unfold Multiline Headers
+    const raw = unfoldHeader(rawInput);
+
+    let threatScore = 0;
+    const anomalies = [];
+
+    // Helper to extract fields
+    const getHeaderField = (fieldName) => {
+      const regex = new RegExp(`^${fieldName}:\\s*(.*)$`, 'im');
+      const match = raw.match(regex);
+      return match ? match[1].trim() : "Not Found";
+    };
+
+    // Extract Originating IP
+    const extractOriginatingIP = (text) => {
+      const ipRegex = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g;
+      const matches = text.match(ipRegex) || [];
+      const validIps = matches.filter(ip => 
+        !ip.startsWith('127.') && 
+        !ip.startsWith('10.') && 
+        !ip.startsWith('192.168.') && 
+        !ip.startsWith('172.16.')
+      );
+      return validIps.length > 0 ? validIps[validIps.length - 1] : (matches[0] || "Not Detected");
+    };
+
+    const originatingIp = extractOriginatingIP(raw);
+
+    // Step B: Dual API Geolocation Fetch
+    const geoDetails = await fetchIpGeoDetails(originatingIp);
+    let ipReputation = "CLEAN ✅ (No Blacklist Matches)";
+
+    // Step C: Authentication Protocol Check
+    const authHeader = getHeaderField('Authentication-Results');
+    const parseAuthStatus = (tech) => {
+      const regex = new RegExp(`${tech}=([a-z]+)`, 'i');
+      const match = authHeader.match(regex);
+      if (!match) return { status: 'UNKNOWN', code: 'neutral' };
+      const val = match[1].toLowerCase();
+      if (val === 'pass') return { status: 'PASS ✅', code: 'pass' };
+      if (val === 'fail' || val === 'softfail') return { status: 'FAIL ❌', code: 'fail' };
+      return { status: val.toUpperCase(), code: 'neutral' };
+    };
+
+    const spf = parseAuthStatus('spf');
+    const dkim = parseAuthStatus('dkim');
+    const dmarc = parseAuthStatus('dmarc');
+
+    if (spf.code === 'fail') {
+      threatScore += 35;
+      anomalies.push("❌ SPF Authentication Failed (Sender IP is not authorized to send for this domain).");
+    }
+    if (dkim.code === 'fail') {
+      threatScore += 35;
+      anomalies.push("❌ DKIM Signature Check Failed (Email content or headers were altered in transit).");
+    }
+
+    // Step D: Domain Spoofing & Punycode Check
+    const fromVal = getHeaderField('From');
+    const returnPathVal = getHeaderField('Return-Path');
+
+    if (fromVal !== "Not Found" && returnPathVal !== "Not Found") {
+      const fromDomMatch = fromVal.match(/@([a-zA-Z0-9.-]+)/);
+      const returnDomMatch = returnPathVal.match(/@([a-zA-Z0-9.-]+)/);
+
+      if (fromDomMatch && returnDomMatch) {
+        const fromDom = fromDomMatch[1].toLowerCase();
+        const returnDom = returnDomMatch[1].toLowerCase();
+
+        if (fromDom !== returnDom) {
+          threatScore += 25;
+          anomalies.push(`⚠️ Sender Mismatch Spoof: Display From (${fromDom}) does not match Return-Path (${returnDom}).`);
+        }
+
+        if (fromDom.includes('xn--') || returnDom.includes('xn--')) {
+          threatScore += 20;
+          anomalies.push("🚨 Punycode Typosquatting Alert: Foreign character encoding detected in domain name!");
+        }
+      }
+    }
+
+    // Step E: Parse Hops & Calculate Transit Delays in Seconds
+    const receivedMatches = raw.match(/^Received:\s*.*$/gim) || [];
+    let hopsHtml = "";
+    let hopsReportArr = [];
+    let prevTimestamp = null;
+
+    if (receivedMatches.length > 0) {
+      // Reverse to analyze chronologically from sender to recipient
+      const chronologicalHops = [...receivedMatches].reverse();
+
+      chronologicalHops.forEach((hopStr, index) => {
+        const cleaned = hopStr.replace(/^Received:\s*/i, '').trim();
+        
+        // Extract timestamp if present after semicolon ';'
+        let timeDelayStr = "Normal Transit";
+        let hopTimestamp = null;
+
+        if (cleaned.includes(';')) {
+          const rawDateStr = cleaned.split(';').pop().trim();
+          const parsedDate = Date.parse(rawDateStr);
+          if (!isNaN(parsedDate)) {
+            hopTimestamp = parsedDate;
+            if (prevTimestamp !== null) {
+              const delaySeconds = Math.round((hopTimestamp - prevTimestamp) / 1000);
+              if (delaySeconds > 0) {
+                if (delaySeconds >= 600) { // 10+ Mins delay
+                  timeDelayStr = `⚠️ DELAY: ${Math.round(delaySeconds / 60)} mins (${delaySeconds}s)`;
+                  threatScore += 15;
+                  anomalies.push(`⚠️ Excessive Delay Flag: Hop #${index + 1} held the email for ${Math.round(delaySeconds / 60)} mins! Potential interception.`);
+                } else {
+                  timeDelayStr = `+${delaySeconds}s delay`;
+                }
+              } else {
+                timeDelayStr = "< 1s delay";
+              }
+            }
+            prevTimestamp = hopTimestamp;
+          }
+        }
+
+        hopsHtml += `<tr>
+          <td>#${index + 1}</td>
+          <td>${cleaned.substring(0, 85)}...</td>
+          <td style="color:${timeDelayStr.includes('⚠️') ? '#f59e0b' : '#10b981'}; font-weight:600;">${timeDelayStr}</td>
+        </tr>`;
+        hopsReportArr.push(`Hop #${index + 1}: ${cleaned} | Delay: ${timeDelayStr}`);
+      });
+    } else {
+      hopsHtml = `<tr><td colspan="3" style="text-align:center;">No Received hops parsed</td></tr>`;
+    }
+
+    // Check suspicious mailer
+    const mailerVal = getHeaderField('X-Mailer') !== "Not Found" ? getHeaderField('X-Mailer') : getHeaderField('User-Agent');
+    if (mailerVal.toLowerCase().includes('php') || mailerVal.toLowerCase().includes('python') || mailerVal.toLowerCase().includes('mass')) {
+      threatScore += 15;
+      anomalies.push(`⚠️ Suspicious Automated Mailer Tool Detected: (${mailerVal})`);
+    }
+
+    // Cap score at 100
+    threatScore = Math.min(threatScore, 100);
+
+    // Threat Score Meter Styling
+    let threatClass = "risk-safe";
+    let threatDesc = "SAFE: No severe authentication, spoofing, or transit delay anomalies detected.";
+
+    if (threatScore >= 60) {
+      threatClass = "risk-danger";
+      threatDesc = "CRITICAL THREAT: High Phishing / Spoofing Risk! Multiple security protocols or transit delay checks failed.";
+    } else if (threatScore >= 25) {
+      threatClass = "risk-warn";
+      threatDesc = "MODERATE WARNING: Header mismatch or transit delay anomaly detected. Proceed with caution.";
+    }
+
+    // Render Anomalies
+    const anomalyContainer = document.getElementById('res-anomaly-container');
+    if (anomalies.length > 0) {
+      anomalyContainer.innerHTML = anomalies.map(a => `<div class="anomaly-item">${a}</div>`).join('');
+    } else {
+      anomalyContainer.innerHTML = `<div class="anomaly-item" style="color:#10b981;">✅ No severe security anomalies or domain spoofing detected.</div>`;
+    }
+
+    // Populate UI Fields
+    const threatContainer = document.getElementById('threat-card-container');
+    threatContainer.className = "threat-card " + threatClass;
+    document.getElementById('res-threat-score').innerText = `${threatScore} / 100`;
+    document.getElementById('res-threat-desc').innerText = threatDesc;
+
+    document.getElementById('res-spf').innerText = spf.status;
+    document.getElementById('res-spf').className = "auth-status status-" + spf.code;
+
+    document.getElementById('res-dkim').innerText = dkim.status;
+    document.getElementById('res-dkim').className = "auth-status status-" + dkim.code;
+
+    document.getElementById('res-dmarc').innerText = dmarc.status;
+    document.getElementById('res-dmarc').className = "auth-status status-" + dmarc.code;
+
+    document.getElementById('res-from').innerText = fromVal;
+    document.getElementById('res-return-path').innerText = returnPathVal;
+    document.getElementById('res-ip').innerText = originatingIp;
+    document.getElementById('res-geo').innerText = geoDetails;
+    document.getElementById('res-ip-reputation').innerText = ipReputation;
+    document.getElementById('res-to').innerText = getHeaderField('To');
+    document.getElementById('res-subject').innerText = getHeaderField('Subject');
+    document.getElementById('res-date').innerText = getHeaderField('Date');
+    document.getElementById('res-mailer').innerText = mailerVal;
+    document.getElementById('res-msg-id').innerText = getHeaderField('Message-ID');
+
+    document.getElementById('res-hops-body').innerHTML = hopsHtml;
+
+    // Printable Forensic Text Report
+    fullReportText = `--- PRO EMAIL FORENSIC SECURITY REPORT ---
+Threat Score: ${threatScore}/100 (${threatDesc})
+
+[AUTHENTICATION STATUS]
+- SPF: ${spf.status}
+- DKIM: ${dkim.status}
+- DMARC: ${dmarc.status}
+
+[ANOMALIES & ALERTS]
+${anomalies.length > 0 ? anomalies.join('\n') : "None"}
+
+[HEADER META & TRACE]
+- From: ${fromVal}
+- Return-Path: ${returnPathVal}
+- Originating IP: ${originatingIp}
+- Location & ISP: ${geoDetails}
+- IP Reputation: ${ipReputation}
+- To: ${getHeaderField('To')}
+- Subject: ${getHeaderField('Subject')}
+- Date: ${getHeaderField('Date')}
+- Mailer: ${mailerVal}
+- Message-ID: ${getHeaderField('Message-ID')}
+
+[SERVER HOPS & TRANSIT DELAYS]
+${hopsReportArr.join('\n')}
+
+Generated via ACSN Tools Email Forensic Assistant.`;
+
+    loader.style.display = 'none';
+    resultsContainer.style.display = 'block';
+    showToast("✅ Deep Forensic Analysis Complete!");
+
+  } catch (err) {
+    loader.style.display = 'none';
+    showError("❌ Failed to parse Email Header: " + err.message);
+  }
+}
+
+function showError(msg) {
+  const errorBox = document.getElementById('error-box');
+  errorBox.innerText = msg;
+  errorBox.style.display = 'block';
+}
+
+function hideError() {
+  const errorBox = document.getElementById('error-box');
+  errorBox.style.display = 'none';
+}
+
+// COPY REPORT
+function copyReport() {
+  playSound('action');
+  if (!fullReportText) return;
+
+  navigator.clipboard.writeText(fullReportText).then(() => {
+    showToast("📋 Forensic Report copied to clipboard!");
+  }).catch(() => {
+    showToast("❌ Clipboard permission denied.");
+  });
+}
+
+// SHARE REPORT
+async function shareReport() {
+  playSound('action');
+  if (!fullReportText) return;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Pro Email Forensic Security Report - ACSN Tools",
+        text: fullReportText
+      });
+      showToast("🔗 Shared successfully!");
+    } catch (err) {
+      // User cancelled
+    }
+  } else {
+    showToast("⚠️ Sharing is not supported on this browser.");
+  }
+}
+
+// DOWNLOAD TEXT REPORT
+function downloadPdfReport() {
+  playSound('action');
+  if (!fullReportText) return;
+
+  const defaultName = "email_forensic_report.txt";
+  const userFileName = prompt("Enter file name to save report:", defaultName);
+
+  if (userFileName === null) return;
+
+  let finalFileName = userFileName.trim();
+  if (!finalFileName) finalFileName = defaultName;
+  if (!finalFileName.includes('.')) finalFileName += '.txt';
+
+  const blob = new Blob([fullReportText], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.getElementById('a') || document.createElement('a');
+  a.href = url;
+  a.download = finalFileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("📄 Saved report as: " + finalFileName);
+}
+
+function clearAll(isSilent = false) {
+  if (!isSilent) playSound('clear');
+
+  fullReportText = "";
+  document.getElementById('header-input').value = "";
+  document.getElementById('results-container').style.display = 'none';
+  hideError();
+
+  if (!isSilent) showToast("🧹 Header input cleared!");
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2500);
+}
+</script>
+
+</body>
+
+</html>

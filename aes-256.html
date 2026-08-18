@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AES-256 Text Encryption & Decryption | ACSN Tools</title>
+
+<meta name="description" content="Encrypt and decrypt sensitive text securely using custom passphrases with AES-256 algorithm in your browser.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 900px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* TAB SELECTION */
+.tab-selection {
+display: flex;
+gap: 12px;
+margin-bottom: 20px;
+}
+.tab-btn {
+flex: 1;
+padding: 14px;
+background-color: #0f172a;
+color: #9ca3af;
+border: 2px solid #334155;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 700;
+font-size: 1rem;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.tab-btn:hover {
+border-color: #2563eb;
+color: #ffffff;
+}
+.tab-btn.active {
+background-color: #2563eb;
+color: #ffffff;
+border-color: #3b82f6;
+box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+}
+
+/* INPUTS */
+.input-wrapper {
+position: relative;
+margin: 15px 0;
+}
+.input-label {
+color: #00ffcc;
+font-size: 0.88rem;
+font-weight: 600;
+margin-bottom: 6px;
+display: block;
+}
+.eval-input {
+width: 100%;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 0.95rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+transition: all 0.2s;
+}
+.eval-input:focus {
+outline: none;
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+textarea.eval-input {
+resize: vertical;
+min-height: 110px;
+}
+
+/* BUTTON GRID */
+.button-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-top: 20px;
+margin-bottom: 20px;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px;
+font-size: 0.95rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-1px);
+}
+.btn-clear {
+background-color: #334155;
+}
+.btn-clear:hover {
+background-color: #475569;
+}
+
+/* RESULTS PANEL */
+#results-container {
+display: none;
+margin-top: 25px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.result-card {
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+margin-bottom: 15px;
+}
+.result-header {
+margin-bottom: 10px;
+}
+.result-title {
+color: #00ffcc;
+font-weight: 700;
+font-size: 0.95rem;
+}
+
+/* OUTPUT BOX STYLING */
+.result-value {
+color: #38bdf8;
+font-family: monospace;
+font-size: 0.92rem;
+white-space: pre-wrap;
+word-break: break-all;
+background-color: #0b0f19;
+padding: 14px;
+border-radius: 6px;
+border: 1px solid #1e293b;
+min-height: 40px;
+line-height: 1.5;
+margin-bottom: 12px; /* Bottom margin before action buttons */
+}
+
+/* BUTTONS GROUP BELOW OUTPUT BOX */
+.action-btn-group-below {
+display: flex;
+gap: 10px;
+justify-content: flex-end;
+flex-wrap: wrap;
+}
+.mini-btn {
+background-color: #1e293b;
+color: #9ca3af;
+border: 1px solid #334155;
+padding: 8px 16px;
+font-size: 0.88rem;
+font-weight: 600;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.2s;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+.mini-btn:hover {
+color: #ffffff;
+border-color: #2563eb;
+background-color: #2563eb;
+}
+
+.error-box {
+background-color: rgba(239, 68, 68, 0.15);
+border: 1px solid #ef4444;
+color: #fca5a5;
+padding: 12px 16px;
+border-radius: 8px;
+margin-top: 15px;
+display: none;
+font-size: 0.9rem;
+line-height: 1.5;
+}
+
+/* TOAST NOTIFICATION */
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px 18px;
+background-color: rgba(16, 185, 129, 0.15);
+border: 1px solid #10b981;
+border-radius: 8px;
+display: none;
+text-align: center;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>AES-256 Text Encryption &amp; Decryption</h1>
+
+<p>
+Encrypt sensitive text using custom passphrases with AES-256 algorithm.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="Encryption Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>Choose between <strong>Encrypt Mode</strong> or <strong>Decrypt Mode</strong>. Enter your text and a custom secret passphrase/key. The process is executed 100% locally client-side in your browser for maximum security.</p>
+</div>
+
+<!-- MODE SELECTION TAB -->
+<div class="tab-selection">
+  <button type="button" class="tab-btn active" id="tab-encrypt" onclick="switchMode('encrypt')">🔒 Encrypt Text</button>
+  <button type="button" class="tab-btn" id="tab-decrypt" onclick="switchMode('decrypt')">🔓 Decrypt Text</button>
+</div>
+
+<!-- INPUT SECTION -->
+<div class="input-wrapper">
+  <label class="input-label" id="text-input-label">📝 Text to Encrypt:</label>
+  <textarea id="main-input" class="eval-input" placeholder="Enter sensitive text here..."></textarea>
+</div>
+
+<div class="input-wrapper">
+  <label class="input-label">🔑 Secret Passphrase / Key:</label>
+  <input type="password" id="passphrase-input" class="eval-input" placeholder="Enter secret password..." />
+</div>
+
+<!-- BUTTONS -->
+<div class="button-grid">
+  <button type="button" class="action-btn" id="process-btn" onclick="processAes()">⚡ Encrypt Now</button>
+  <button type="button" class="action-btn btn-clear" onclick="clearAll(false)">🧹 Clear Input</button>
+</div>
+
+<!-- ERROR BOX -->
+<div id="error-box" class="error-box"></div>
+
+<!-- RESULTS AREA -->
+<div id="results-container">
+  <div class="result-card">
+    <div class="result-header">
+      <span class="result-title" id="result-title-text">🔒 Encrypted Ciphertext (Base64)</span>
+    </div>
+    
+    <!-- RESULT TEXT AREA -->
+    <div class="result-value" id="res-output">-</div>
+
+    <!-- BUTTONS PLACED DIRECTLY BELOW THE OUTPUT BOX -->
+    <div class="action-btn-group-below">
+      <button type="button" class="mini-btn" onclick="copyOutput()">📋 Copy</button>
+      <button type="button" class="mini-btn" onclick="downloadOutput()">💾 Download</button>
+      <button type="button" class="mini-btn" onclick="shareOutput()">🔗 Share</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<!-- Crypto-JS Library for AES-256 Encryption -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="../../home/script.js"></script>
+
+<script>
+let currentMode = 'encrypt';
+
+function playSound(type = 'action') {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    if (type === 'action') {
+      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+    } else {
+      osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.05);
+    }
+
+    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.08);
+  } catch (e) {}
+}
+
+// MODE SWITCH WITH AUTOMATIC DATA CLEARING
+function switchMode(mode) {
+  if (currentMode === mode) return;
+  
+  playSound('action');
+  currentMode = mode;
+  
+  clearAll(true);
+
+  const btnEnc = document.getElementById('tab-encrypt');
+  const btnDec = document.getElementById('tab-decrypt');
+  const labelText = document.getElementById('text-input-label');
+  const processBtn = document.getElementById('process-btn');
+  const mainInput = document.getElementById('main-input');
+
+  if (mode === 'encrypt') {
+    btnEnc.classList.add('active');
+    btnDec.classList.remove('active');
+    labelText.innerText = "📝 Text to Encrypt:";
+    mainInput.placeholder = "Enter sensitive text here...";
+    processBtn.innerHTML = "⚡ Encrypt Now";
+  } else {
+    btnDec.classList.add('active');
+    btnEnc.classList.remove('active');
+    labelText.innerText = "🔐 Ciphertext to Decrypt (Base64):";
+    mainInput.placeholder = "Paste AES encrypted ciphertext string here...";
+    processBtn.innerHTML = "⚡ Decrypt Now";
+  }
+}
+
+function processAes() {
+  playSound('action');
+  const text = document.getElementById('main-input').value.trim();
+  const pass = document.getElementById('passphrase-input').value;
+  const errorBox = document.getElementById('error-box');
+  const resultsContainer = document.getElementById('results-container');
+  const resOutput = document.getElementById('res-output');
+  const resTitle = document.getElementById('result-title-text');
+
+  hideError();
+
+  if (!text) {
+    showError(currentMode === 'encrypt' ? "⚠️ Please enter text to encrypt." : "⚠️ Please enter ciphertext to decrypt.");
+    return;
+  }
+
+  if (!pass) {
+    showError("⚠️ Secret Passphrase / Key is required!");
+    return;
+  }
+
+  try {
+    if (currentMode === 'encrypt') {
+      const encrypted = CryptoJS.AES.encrypt(text, pass).toString();
+      resTitle.innerText = "🔒 Encrypted Ciphertext (Base64)";
+      resOutput.innerText = encrypted;
+      showToast("✅ Text encrypted successfully!");
+    } else {
+      const decryptedBytes = CryptoJS.AES.decrypt(text, pass);
+      const decryptedText = decryptedBytes.toString(CryptoJS.enc.Utf8);
+
+      if (!decryptedText) {
+        showError("❌ Decryption failed! Invalid ciphertext or incorrect passphrase.");
+        resultsContainer.style.display = 'none';
+        return;
+      }
+
+      resTitle.innerText = "🔓 Decrypted Plaintext";
+      resOutput.innerText = decryptedText;
+      showToast("✅ Text decrypted successfully!");
+    }
+
+    resultsContainer.style.display = 'block';
+  } catch (err) {
+    showError("❌ Error processing AES algorithm: " + err.message);
+    resultsContainer.style.display = 'none';
+  }
+}
+
+function showError(msg) {
+  const errorBox = document.getElementById('error-box');
+  errorBox.innerText = msg;
+  errorBox.style.display = 'block';
+}
+
+function hideError() {
+  const errorBox = document.getElementById('error-box');
+  errorBox.style.display = 'none';
+}
+
+// COPY WITH TOAST ALERT
+function copyOutput() {
+  playSound('action');
+  const text = document.getElementById('res-output').innerText;
+  if (!text || text === '-') return;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("📋 Copied to clipboard successfully!");
+  }).catch(() => {
+    showToast("❌ Clipboard permission denied.");
+  });
+}
+
+// DOWNLOAD ONLY AFTER USER TYPES NAME AND CLICKS "OK"
+function downloadOutput() {
+  playSound('action');
+  const text = document.getElementById('res-output').innerText;
+  if (!text || text === '-') return;
+
+  const defaultName = currentMode === 'encrypt' ? 'encrypted-text' : 'decrypted-text';
+  
+  // Open prompt box asking for file name
+  const userFileName = prompt("Enter file name to save:", defaultName);
+
+  // If user clicks "Cancel", stop execution (Do not save)
+  if (userFileName === null) {
+    return;
+  }
+
+  let finalFileName = userFileName.trim();
+  if (!finalFileName) finalFileName = defaultName;
+  if (!finalFileName.endsWith('.txt')) finalFileName += '.txt';
+
+  // Proceed to download only when user confirms OK
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = finalFileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("💾 Saved as: " + finalFileName);
+}
+
+// SHARE FEATURE
+async function shareOutput() {
+  playSound('action');
+  const text = document.getElementById('res-output').innerText;
+  if (!text || text === '-') return;
+
+  const titleName = currentMode === 'encrypt' ? 'AES Encrypted Ciphertext' : 'AES Decrypted Text';
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: titleName + " - ACSN Tools",
+        text: text
+      });
+      showToast("🔗 Shared successfully!");
+    } catch (err) {
+      // User cancelled share
+    }
+  } else {
+    showToast("⚠️ Sharing is not supported on this browser.");
+  }
+}
+
+function clearAll(isSilent = false) {
+  if (!isSilent) playSound('clear');
+  document.getElementById('main-input').value = "";
+  document.getElementById('passphrase-input').value = "";
+  document.getElementById('results-container').style.display = 'none';
+  document.getElementById('res-output').innerText = "-";
+  hideError();
+  if (!isSilent) showToast("🧹 All fields cleared!");
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2500);
+}
+</script>
+
+</body>
+
+</html>

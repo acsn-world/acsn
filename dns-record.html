@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DNS Record Lookup Tool | ACSN Tools</title>
+
+<meta name="description" content="Check A, AAAA, CNAME, MX, TXT, and NS records for any domain instantly in your browser.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 950px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* INPUT SECTION */
+.input-group {
+display: flex;
+gap: 10px;
+margin-bottom: 20px;
+}
+@media (max-width: 600px) {
+.input-group {
+flex-direction: column;
+}
+}
+.domain-input {
+flex: 1;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #38bdf8;
+padding: 14px 18px;
+font-size: 1rem;
+border-radius: 8px;
+outline: none;
+transition: all 0.2s;
+}
+.domain-input:focus {
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+.lookup-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px 24px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.lookup-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-1px);
+}
+
+/* RESULTS CONTAINER (HIDDEN INITIALLY) */
+#results-container {
+display: none;
+margin-top: 25px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.record-section {
+margin-bottom: 20px;
+background-color: #0f172a;
+border: 1px solid #1e293b;
+border-radius: 8px;
+overflow: hidden;
+}
+.record-header {
+background-color: #1e293b;
+padding: 10px 16px;
+color: #00ffcc;
+font-weight: 700;
+font-size: 0.9rem;
+text-transform: uppercase;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.record-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 0.88rem;
+text-align: left;
+}
+.record-table th, .record-table td {
+padding: 10px 16px;
+border-bottom: 1px solid #1e293b;
+word-break: break-all;
+}
+.record-table th {
+color: #9ca3af;
+font-weight: 600;
+background-color: rgba(15, 23, 42, 0.5);
+}
+.record-table td {
+color: #e2e8f0;
+font-family: monospace;
+}
+.record-table tr:last-child td {
+border-bottom: none;
+}
+.badge-ttl {
+background-color: #1e1b4b;
+color: #818cf8;
+padding: 2px 8px;
+border-radius: 4px;
+font-size: 0.78rem;
+font-weight: 600;
+}
+.no-data {
+padding: 12px 16px;
+color: #64748b;
+font-size: 0.85rem;
+font-style: italic;
+}
+.loader {
+display: none;
+text-align: center;
+padding: 30px;
+color: #38bdf8;
+font-weight: 600;
+}
+.error-box {
+background-color: rgba(239, 68, 68, 0.15);
+border: 1px solid #ef4444;
+color: #fca5a5;
+padding: 12px 16px;
+border-radius: 8px;
+margin-top: 15px;
+display: none;
+font-size: 0.9rem;
+line-height: 1.5;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>DNS Record Lookup Tool</h1>
+
+<p>
+Check A, AAAA, CNAME, MX, TXT, and NS records associated with any domain name instantly.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="DNS Lookup Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>Enter any domain name (e.g. <code>google.com</code> or <code>github.com</code>) in the input box below and click <strong>Lookup DNS Records</strong> to fetch its server details live.</p>
+</div>
+
+<!-- INPUT SECTION -->
+<div class="input-group">
+  <input type="text" id="domain-input" class="domain-input" placeholder="Enter domain name... e.g. google.com" onkeydown="if(event.key==='Enter') fetchDNSRecords()">
+  <button type="button" class="lookup-btn" onclick="fetchDNSRecords()">🔍 Lookup DNS Records</button>
+</div>
+
+<!-- ERROR BOX -->
+<div id="error-box" class="error-box"></div>
+
+<!-- LOADER -->
+<div id="loader" class="loader">
+  🌐 Querying Cloudflare DNS Servers...
+</div>
+
+<!-- RESULT PANEL CONTAINER (HIDDEN UNTIL CLICKED) -->
+<div id="results-container">
+  <div id="records-wrapper"></div>
+</div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+// 1. LIVE CLOCK & GREETING SCRIPT
+function updateClockAndGreeting() {
+  const now = new Date();
+  const timeEl = document.getElementById('current-time');
+  const greetEl = document.getElementById('greeting-text');
+  
+  if (timeEl) {
+    timeEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  }
+  
+  if (greetEl) {
+    const hours = now.getHours();
+    let greeting = "Good Evening!";
+    if (hours < 12) greeting = "Good Morning!";
+    else if (hours < 17) greeting = "Good Afternoon!";
+    greetEl.innerText = greeting;
+  }
+}
+setInterval(updateClockAndGreeting, 1000);
+updateClockAndGreeting();
+
+// 2. SONAR PING SOUND EFFECT
+function playDnsSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
+    osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.12);
+
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.18);
+  } catch (e) {}
+}
+
+// 3. UTILITY FUNCTIONS
+function cleanDomainInput(rawDomain) {
+  let clean = rawDomain.trim().toLowerCase();
+  clean = clean.replace(/^(https?:\/\/)?(www\.)?/, '');
+  clean = clean.replace(/\/.*$/, ''); // Remove URL paths
+  clean = clean.replace(/:.*$/, '');  // Remove port numbers
+  return clean;
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// 4. DNS FETCH LOGIC (Cloudflare DoH API)
+const RECORD_TYPES = ['A', 'AAAA', 'CNAME', 'MX', 'TXT', 'NS'];
+
+async function queryCloudflareDNS(domain, type) {
+  const url = `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(domain)}&type=${type}`;
+  const response = await fetch(url, {
+    headers: { 'accept': 'application/dns-json' }
+  });
+  return response.json();
+}
+
+async function fetchDNSRecords() {
+  playDnsSound();
+  
+  let domain = document.getElementById('domain-input').value;
+  domain = cleanDomainInput(domain);
+
+  const errorBox = document.getElementById('error-box');
+  const loader = document.getElementById('loader');
+  const resultsContainer = document.getElementById('results-container');
+  const recordsWrapper = document.getElementById('records-wrapper');
+
+  // Reset UI
+  errorBox.style.display = 'none';
+  resultsContainer.style.display = 'none';
+
+  if (!domain || !domain.includes('.')) {
+    errorBox.innerText = "⚠️ Please enter a valid domain name (e.g. google.com).";
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  loader.style.display = 'block';
+
+  try {
+    const promises = RECORD_TYPES.map(type => queryCloudflareDNS(domain, type));
+    const results = await Promise.all(promises);
+
+    loader.style.display = 'none';
+    recordsWrapper.innerHTML = '';
+
+    // NXDOMAIN Check (Domain does not exist)
+    if (results.length > 0 && results[0].Status === 3) {
+      errorBox.innerText = `❌ Domain "${escapeHTML(domain)}" does not exist (NXDOMAIN). Please check the spelling.`;
+      errorBox.style.display = 'block';
+      return;
+    }
+
+    results.forEach((res, index) => {
+      const typeName = RECORD_TYPES[index];
+      const records = res.Answer || [];
+
+      let html = `
+        <div class="record-section">
+          <div class="record-header">
+            <span>${typeName} Records</span>
+            <span style="font-size:0.75rem; color:#9ca3af;">${records.length} Found</span>
+          </div>
+      `;
+
+      if (records.length > 0) {
+        html += `
+          <table class="record-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>TTL</th>
+                <th>Data / Value</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        records.forEach(rec => {
+          html += `
+            <tr>
+              <td>${escapeHTML(rec.name)}</td>
+              <td><span class="badge-ttl">${rec.TTL}s</span></td>
+              <td>${escapeHTML(rec.data)}</td>
+            </tr>
+          `;
+        });
+
+        html += `</tbody></table>`;
+      } else {
+        html += `<div class="no-data">No ${typeName} records found for this domain.</div>`;
+      }
+
+      html += `</div>`;
+      recordsWrapper.innerHTML += html;
+    });
+
+    resultsContainer.style.display = 'block';
+
+  } catch (err) {
+    loader.style.display = 'none';
+    errorBox.innerText = "❌ Failed to fetch DNS records. Please check your network connection or try again.";
+    errorBox.style.display = 'block';
+  }
+}
+</script>
+
+</body>
+
+</html>

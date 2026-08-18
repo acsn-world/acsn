@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cybersecurity Learning & Guides | ACSN</title>
+
+<meta name="description" content="Master cybersecurity concepts with ACSN's structured learning guides, advanced defense strategies, and latest security news.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* Hint Box Styling between Hero and Tabs */
+.learning-hint-box {
+  background-color: var(--card-bg, #111827);
+  border: 1px solid var(--border-color, #1f2937);
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  padding: 18px 24px;
+  margin: 30px auto 10px auto;
+  max-width: 900px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.learning-hint-box h2 {
+  color: var(--text-primary, #ffffff); /* बाकी हेडिंग्स जैसा सेम व्हाइट कलर */
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.learning-hint-box p {
+  color: var(--text-secondary, #9ca3af);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Tab Navigation Highlight & Display Styles */
+.tab-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 25px 0 15px 0;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  background-color: var(--card-bg, #111827);
+  color: var(--text-primary, #ffffff);
+  border: 1px solid var(--border-color, #1f2937);
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.tab-button:hover {
+  border-color: #00ffcc;
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+}
+
+/* Highlighted Active Tab Style */
+.tab-button.active {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-color: #00ffcc;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+}
+
+/* Tab Content Visibility Logic */
+.tab-content {
+  display: none; /* Hide all tabs by default */
+}
+
+.tab-content.active {
+  display: block; /* Show active tab content */
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Cybersecurity Learning Hub</h1>
+
+<p>
+Master digital defense with expert guides, step-by-step tutorials, and real-time security alerts.
+</p>
+
+<!-- HOME PAGE STYLE SEARCH BOX -->
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software, or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="tools.html" class="primary-button">Explore Tools</a>
+<a href="software.html" class="secondary-button">Explore Software</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="hero.png" alt="ACSN Learning Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<!-- NEW HINT BOX (BETWEEN HERO AND TABS) -->
+<section class="learning-hint-box">
+  <h2>💡 How to Use This Learning Hub</h2>
+  <p>
+    Explore structured cybersecurity knowledge categorized by skill levels. Select a tab below to switch between foundational beginner guides, advanced defense strategies, or the latest trending cyber threat alerts.
+  </p>
+</section>
+
+<!-- TAB NAVIGATION BUTTONS -->
+<div class="tab-container" role="tablist">
+  <button class="tab-button active" id="tab-btn-1" onclick="switchTab('tab-1', 'tab-btn-1')" role="tab" aria-selected="true" aria-controls="tab-1">Beginner Guides</button>
+  <button class="tab-button" id="tab-btn-2" onclick="switchTab('tab-2', 'tab-btn-2')" role="tab" aria-selected="false" aria-controls="tab-2">Advanced Defense</button>
+  <button class="tab-button" id="tab-btn-3" onclick="switchTab('tab-3', 'tab-btn-3')" role="tab" aria-selected="false" aria-controls="tab-3">Latest Security Articles</button>
+</div>
+
+<!-- ==================== TAB 1: BEGINNER GUIDES (DEFAULT ACTIVE) ==================== -->
+<div id="tab-1" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-1">
+  
+  <section class="explore">
+    <h2>1. Account &amp; Password Protection</h2>
+    <p class="section-intro">Essential foundation steps to secure your online credentials and social accounts.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Password Manager Setup</h3>
+        <p>Learn how to generate and securely store complex passwords without needing to memorize them all.</p>
+      </article>
+      <article class="card">
+        <h3>Two-Factor Authentication (2FA)</h3>
+        <p>Set up authenticator apps for WhatsApp, Google, and social media to block unauthorized logins.</p>
+      </article>
+      <article class="card">
+        <h3>Social Media Privacy Hardening</h3>
+        <p>Audit privacy controls on Instagram, Facebook, and Telegram to prevent data scraping.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="explore">
+    <h2>2. Phishing &amp; Online Fraud Awareness</h2>
+    <p class="section-intro">Recognize malicious scams before clicking harmful links or sharing private details.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Identifying Fake Emails &amp; Messages</h3>
+        <p>Spot warning signs in phishing emails, spoofed headers, and urgency tactics used by attackers.</p>
+      </article>
+      <article class="card">
+        <h3>Spotting Fake Websites &amp; URLs</h3>
+        <p>Check SSL certificates and domain names to ensure you are on a genuine payment portal.</p>
+      </article>
+      <article class="card">
+        <h3>Fake Job &amp; Task Scams Protection</h3>
+        <p>Avoid part-time work frauds, fake Telegram investment tasks, and advance-fee scams.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="explore">
+    <h2>3. Basic Device &amp; Browsing Safety</h2>
+    <p class="section-intro">Practical habits for clean browsing and local computer/mobile security.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Safe Web Browsing Habits</h3>
+        <p>Use privacy ad-blockers and HTTPS-only mode to prevent browser tracking and pop-ups.</p>
+      </article>
+      <article class="card">
+        <h3>Home Wi-Fi Router Security</h3>
+        <p>Change default admin credentials, enable WPA3/WPA2 encryption, and hide your SSID.</p>
+      </article>
+      <article class="card">
+        <h3>Antivirus &amp; Firewall Essentials</h3>
+        <p>Understand how built-in defenses like Windows Defender keep your system safe from infection.</p>
+      </article>
+    </div>
+  </section>
+
+</div>
+
+<!-- ==================== TAB 2: ADVANCED DEFENSE ==================== -->
+<div id="tab-2" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-2">
+
+  <section class="explore">
+    <h2>1. Network &amp; Connection Encryption</h2>
+    <p class="section-intro">Protecting network traffic from interception across public and private networks.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Public Wi-Fi Risks &amp; VPNs</h3>
+        <p>Encrypt all device traffic over untrusted public networks using zero-log VPN connections.</p>
+      </article>
+      <article class="card">
+        <h3>IP Address &amp; Digital Footprint Hiding</h3>
+        <p>Prevent ISP and third-party tracking by concealing your public IP address and location.</p>
+      </article>
+      <article class="card">
+        <h3>Secure DNS Configuration</h3>
+        <p>Switch to encrypted DNS-over-HTTPS (DoH) to bypass censorship and block malicious domains.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="explore">
+    <h2>2. Data &amp; System Hardening</h2>
+    <p class="section-intro">Advanced steps to secure stored files and protect operating systems against threats.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Full Disk &amp; File Encryption</h3>
+        <p>Use BitLocker or VeraCrypt to encrypt sensitive storage drives against physical theft.</p>
+      </article>
+      <article class="card">
+        <h3>Ransomware Attack Defense</h3>
+        <p>Set up isolated offline backups (3-2-1 rule) and controlled folder access to stop ransomware.</p>
+      </article>
+      <article class="card">
+        <h3>Secure Data Backup Strategies</h3>
+        <p>Automate encrypted cloud and local backups to prevent permanent data loss.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="explore">
+    <h2>3. Smartphone &amp; Identity Hardening</h2>
+    <p class="section-intro">Securing mobile operating systems against spyware, malware, and telecom fraud.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Mobile App Permissions Audit</h3>
+        <p>Restrict microphone, camera, and location access for suspicious Android/iOS applications.</p>
+      </article>
+      <article class="card">
+        <h3>SIM Swapping &amp; Telecom Fraud</h3>
+        <p>Protect your phone number with a carrier PIN to block unauthorized SIM card transfers.</p>
+      </article>
+      <article class="card">
+        <h3>Erasing Online Footprints</h3>
+        <p>Remove personal records and phone numbers from public data broker directories.</p>
+      </article>
+    </div>
+  </section>
+
+</div>
+
+<!-- ==================== TAB 3: LATEST SECURITY ARTICLES ==================== -->
+<div id="tab-3" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-3">
+
+  <section class="explore">
+    <h2>1. Trending AI &amp; Messaging Scams</h2>
+    <p class="section-intro">Stay informed on modern social engineering tactics driven by new technology.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>AI Voice Cloning Scams Alert</h3>
+        <p>How scammers use cloned family voices for fake emergency money requests and how to verify them.</p>
+      </article>
+      <article class="card">
+        <h3>Telegram &amp; WhatsApp Trading Scams</h3>
+        <p>Identifying fake stock/crypto groups promising guaranteed returns through manipulated apps.</p>
+      </article>
+      <article class="card">
+        <h3>Digital Arrest Scams Awareness</h3>
+        <p>Understand how fake law enforcement video calls intimidate victims and how to stay safe.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="explore">
+    <h2>2. Emerging Cyber Threats</h2>
+    <p class="section-intro">Critical insights into ongoing software vulnerabilities and mobile threats.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Zero-Day Vulnerabilities Explained</h3>
+        <p>Why rapid software patching is critical when developers uncover zero-day security gaps.</p>
+      </article>
+      <article class="card">
+        <h3>Banking Trojan &amp; Spyware Alerts</h3>
+        <p>Detecting hidden screen-recording malware disguised as utility apps on mobile devices.</p>
+      </article>
+      <article class="card">
+        <h3>Crypto Wallet &amp; Seed Phrase Security</h3>
+        <p>Safeguarding hardware wallets and private keys against hardware and phishing attacks.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="explore">
+    <h2>3. Security Tips &amp; Best Practices</h2>
+    <p class="section-intro">Recommended tools and operational routines for updated digital defense.</p>
+    <div class="cards">
+      <article class="card">
+        <h3>Essential OS Update Checklist</h3>
+        <p>Why keeping Windows, macOS, Android, and iOS updated closes dangerous system backdoors.</p>
+      </article>
+      <article class="card">
+        <h3>Top Open-Source Privacy Tools</h3>
+        <p>A curated list of privacy-focused browsers, email providers, and messaging apps.</p>
+      </article>
+      <article class="card">
+        <h3>Data Breach Checking Guide</h3>
+        <p>How to safely check if your email address or passwords have leaked in recent database breaches.</p>
+      </article>
+    </div>
+  </section>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="help.html">Contact &amp; Help</a>
+<a href="privacy-policy.html">Privacy Policy</a>
+<a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<!-- TAB SWITCHING JAVASCRIPT SCRIPT -->
+<script>
+function switchTab(tabId, btnId) {
+  // Hide all tab contents
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(content => content.classList.remove('active'));
+
+  // Remove active highlight from all tab buttons
+  const buttons = document.querySelectorAll('.tab-button');
+  buttons.forEach(button => {
+    button.classList.remove('active');
+    button.setAttribute('aria-selected', 'false');
+  });
+
+  // Show selected tab content
+  const selectedTab = document.getElementById(tabId);
+  if (selectedTab) {
+    selectedTab.classList.add('active');
+  }
+
+  // Highlight selected tab button
+  const selectedBtn = document.getElementById(btnId);
+  if (selectedBtn) {
+    selectedBtn.classList.add('active');
+    selectedBtn.setAttribute('aria-selected', 'true');
+  }
+}
+</script>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

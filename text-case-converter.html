@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Text Case Converter & Sanitizer | ACSN Tools</title>
+
+<meta name="description" content="Convert text cases, sanitize text, extract emails/URLs/phones, calculate reading time, and analyze text statistics with Unicode support.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 850px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+.input-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 8px;
+}
+.input-header label {
+color: #ffffff;
+font-weight: 600;
+font-size: 1rem;
+}
+
+.input-wrapper {
+position: relative;
+margin-bottom: 15px;
+}
+.eval-textarea {
+width: 100%;
+min-height: 150px;
+background-color: #1e293b;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 1rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+transition: border-color 0.2s;
+resize: vertical;
+}
+.eval-textarea:focus {
+outline: none;
+border-color: #00ffcc;
+}
+
+.shortcuts-hint {
+font-size: 0.8rem;
+color: #64748b;
+margin-bottom: 15px;
+text-align: right;
+}
+
+.analyze-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px 20px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+width: 100%;
+}
+.analyze-btn:hover {
+background-color: #1d4ed8;
+}
+
+.hidden-section {
+display: none;
+margin-top: 25px;
+}
+
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+gap: 12px;
+margin-bottom: 25px;
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+}
+.stat-item {
+color: #9ca3af;
+font-size: 0.85rem;
+}
+.stat-item strong {
+display: block;
+color: #00ffcc;
+font-size: 1.1rem;
+margin-top: 2px;
+}
+
+.options-group-title {
+color: #ffffff;
+font-size: 1rem;
+font-weight: 600;
+margin: 20px 0 12px 0;
+display: flex;
+align-items: center;
+gap: 8px;
+border-bottom: 1px solid #1e293b;
+padding-bottom: 6px;
+}
+
+.checkbox-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 12px;
+margin-bottom: 20px;
+}
+
+.checkbox-card {
+background-color: #0f172a;
+border: 1px solid #334155;
+padding: 12px 15px;
+border-radius: 8px;
+display: flex;
+align-items: center;
+gap: 12px;
+cursor: pointer;
+transition: all 0.2s ease;
+user-select: none;
+}
+.checkbox-card:hover {
+border-color: #2563eb;
+background-color: #1e293b;
+}
+.checkbox-card input[type="checkbox"] {
+width: 18px;
+height: 18px;
+accent-color: #00ffcc;
+cursor: pointer;
+}
+.checkbox-card label {
+color: #e2e8f0;
+font-size: 0.92rem;
+font-weight: 500;
+cursor: pointer;
+width: 100%;
+}
+
+.btn-row {
+display: flex;
+gap: 10px;
+margin-top: 15px;
+flex-wrap: wrap;
+}
+
+.process-btn {
+background-color: #059669;
+color: #ffffff;
+border: none;
+padding: 14px 20px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+flex: 2;
+min-width: 200px;
+}
+.process-btn:hover {
+background-color: #047857;
+}
+
+.control-btn {
+background-color: #334155;
+color: #ffffff;
+border: none;
+padding: 14px 18px;
+font-size: 0.95rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+flex: 1;
+min-width: 100px;
+}
+.control-btn:hover {
+background-color: #475569;
+}
+.control-btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+}
+
+.result-card {
+background-color: #1e293b;
+padding: 18px;
+border-radius: 8px;
+border: 1px solid #334155;
+margin-top: 25px;
+}
+.result-card label {
+display: block;
+color: #9ca3af;
+font-size: 0.85rem;
+margin-bottom: 8px;
+}
+
+.output-actions {
+display: flex;
+gap: 10px;
+margin-top: 15px;
+flex-wrap: wrap;
+}
+.btn-action-out {
+flex: 1;
+min-width: 120px;
+padding: 12px;
+font-size: 0.9rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+border: none;
+color: #ffffff;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+transition: all 0.2s ease;
+}
+.btn-copy-out { background-color: #2563eb; }
+.btn-copy-out:hover { background-color: #1d4ed8; }
+.btn-dl-out { background-color: #0284c7; }
+.btn-dl-out:hover { background-color: #0369a1; }
+.btn-print-out { background-color: #7c3aed; }
+.btn-print-out:hover { background-color: #6d28d9; }
+.btn-swap-out { background-color: #d97706; }
+.btn-swap-out:hover { background-color: #b45309; }
+.btn-share-out { background-color: #059669; }
+.btn-share-out:hover { background-color: #047857; }
+
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px;
+background-color: rgba(16, 185, 129, 0.1);
+border: 1px solid rgba(16, 185, 129, 0.3);
+border-radius: 6px;
+display: none;
+text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h3>Text Case Converter &amp; Sanitizer</h3>
+
+<p>Convert text cases, clean extra spaces, extract data, and calculate reading time.</p>
+
+<form class="search-box" id="search-form" role="search">
+<label for="search" class="sr-only" style="display:none;">Search tools</label>
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="Text Tool Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>
+1. Enter or paste your text in the text area below.<br>
+2. Click <strong>"🔍 Analyze &amp; Show Options"</strong> (or press <code>Ctrl + Enter</code>) to calculate full statistics.<br>
+3. Check the desired transformation and sanitizer options.<br>
+4. Click <strong>"⚡ Apply Changes"</strong> to update text. Use Undo/Redo, Copy, Download, or Swap features easily!
+</p>
+</div>
+
+<div class="input-header">
+<label for="text-input">Enter or Paste Your Text:</label>
+</div>
+<div class="input-wrapper">
+<textarea id="text-input" class="eval-textarea" placeholder="Type or paste your text here..." oninput="handleInputModification()"></textarea>
+</div>
+<div class="shortcuts-hint">⌨️ Shortcuts: <code>Ctrl+Enter</code> (Apply) | <code>Ctrl+Shift+C</code> (Copy) | <code>Esc</code> (Reset)</div>
+
+<button type="button" class="analyze-btn" onclick="analyzeText()">🔍 Analyze &amp; Show Options</button>
+
+<div class="hidden-section" id="hidden-workflow" role="region" aria-label="Text Options and Analysis">
+
+<div class="stats-grid">
+<div class="stat-item">Characters (Total)<strong id="stat-chars-total">0</strong></div>
+<div class="stat-item">Chars (No Spaces)<strong id="stat-chars-nospace">0</strong></div>
+<div class="stat-item">Words<strong id="stat-words">0</strong></div>
+<div class="stat-item">Lines<strong id="stat-lines">0</strong></div>
+<div class="stat-item">Paragraphs<strong id="stat-paras">0</strong></div>
+<div class="stat-item">Spaces<strong id="stat-spaces">0</strong></div>
+<div class="stat-item">Letters<strong id="stat-letters">0</strong></div>
+<div class="stat-item">Digits<strong id="stat-digits">0</strong></div>
+<div class="stat-item">Reading Time<strong id="stat-read-time">0s</strong></div>
+<div class="stat-item">Speaking Time<strong id="stat-speak-time">0s</strong></div>
+</div>
+
+<div class="options-group-title">🔤 Case Options (Unicode Supported):</div>
+<div class="checkbox-grid">
+<div class="checkbox-card">
+<input type="checkbox" id="chk-uppercase" onchange="handleSingleCaseOption('chk-uppercase')">
+<label for="chk-uppercase">UPPERCASE</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-lowercase" onchange="handleSingleCaseOption('chk-lowercase')">
+<label for="chk-lowercase">lowercase</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-titlecase" onchange="handleSingleCaseOption('chk-titlecase')">
+<label for="chk-titlecase">Title Case (Unicode)</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-sentencecase" onchange="handleSingleCaseOption('chk-sentencecase')">
+<label for="chk-sentencecase">Sentence Case (Unicode)</label>
+</div>
+</div>
+
+<div class="options-group-title">🧹 Text Sanitizer &amp; Cleaners:</div>
+<div class="checkbox-grid">
+<div class="checkbox-card">
+<input type="checkbox" id="chk-trim">
+<label for="chk-trim">Trim Outer Spaces</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-extra-spaces">
+<label for="chk-extra-spaces">Remove Extra Spaces</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-remove-newlines">
+<label for="chk-remove-newlines">Remove Line Breaks</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-strip-html">
+<label for="chk-strip-html">Strip HTML &amp; Scripts</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-remove-dup-lines">
+<label for="chk-remove-dup-lines">Remove Duplicate Lines</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-remove-empty-lines">
+<label for="chk-remove-empty-lines">Remove Empty Lines</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-remove-numbers">
+<label for="chk-remove-numbers">Remove Numbers</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-remove-symbols">
+<label for="chk-remove-symbols">Remove Symbols/Punctuation</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-remove-emojis">
+<label for="chk-remove-emojis">Remove Emojis</label>
+</div>
+</div>
+
+<div class="options-group-title">🔄 Ordering &amp; Reversing:</div>
+<div class="checkbox-grid">
+<div class="checkbox-card">
+<input type="checkbox" id="chk-reverse-text" onchange="handleExclusiveGroup('reverse', 'chk-reverse-text')">
+<label for="chk-reverse-text">Reverse Entire Text</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-reverse-words" onchange="handleExclusiveGroup('reverse', 'chk-reverse-words')">
+<label for="chk-reverse-words">Reverse Words</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-sort-az" onchange="handleExclusiveGroup('sort', 'chk-sort-az')">
+<label for="chk-sort-az">Sort Lines (A-Z)</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-sort-za" onchange="handleExclusiveGroup('sort', 'chk-sort-za')">
+<label for="chk-sort-za">Sort Lines (Z-A)</label>
+</div>
+</div>
+
+<div class="options-group-title">🔍 Data Extractors:</div>
+<div class="checkbox-grid">
+<div class="checkbox-card">
+<input type="checkbox" id="chk-extract-emails" onchange="handleExclusiveGroup('extract', 'chk-extract-emails')">
+<label for="chk-extract-emails">Extract Emails</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-extract-urls" onchange="handleExclusiveGroup('extract', 'chk-extract-urls')">
+<label for="chk-extract-urls">Extract URLs</label>
+</div>
+<div class="checkbox-card">
+<input type="checkbox" id="chk-extract-phones" onchange="handleExclusiveGroup('extract', 'chk-extract-phones')">
+<label for="chk-extract-phones">Extract Phone Numbers</label>
+</div>
+</div>
+
+<div class="btn-row">
+<button type="button" class="process-btn" onclick="processText()">⚡ Apply Changes</button>
+<button type="button" class="control-btn" id="btn-undo" onclick="undoText()" disabled>↩️ Undo</button>
+<button type="button" class="control-btn" id="btn-redo" onclick="redoText()" disabled>↪️ Redo</button>
+<button type="button" class="control-btn" onclick="clearAll()">🗑️ Clear</button>
+</div>
+
+<div class="result-card" aria-live="polite">
+<label for="text-output">Processed Text Output:</label>
+<textarea id="text-output" class="eval-textarea" readonly style="color: #9ca3af;" placeholder="Select options above and click 'Apply Changes'..."></textarea>
+<div class="output-actions" id="output-actions" style="display: none;">
+<button type="button" id="copy-btn" class="btn-action-out btn-copy-out" onclick="copyToClipboard()"><span id="copy-icon">📋</span> <span id="copy-text">Copy</span></button>
+<button type="button" id="swap-btn" class="btn-action-out btn-swap-out" onclick="swapInputOutput()">🔀 Swap Input ↔ Output</button>
+<button type="button" id="dl-btn" class="btn-action-out btn-dl-out" onclick="downloadText()">💾 Download TXT</button>
+<button type="button" id="print-btn" class="btn-action-out btn-print-out" onclick="printText()">🖨️ Print Output</button>
+<button type="button" id="share-btn" class="btn-action-out btn-share-out" onclick="shareOutput()">📤 Share</button>
+</div>
+</div>
+
+</div>
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let undoStack = [];
+let redoStack = [];
+const MAX_STACK_SIZE = 30;
+let toastTimeout = null;
+
+function playCyberSound() {
+try {
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const osc = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+
+osc.type = 'sine';
+osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.08);
+
+gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+
+osc.start();
+osc.stop(audioCtx.currentTime + 0.08);
+} catch (e) {}
+}
+
+function updateLiveClock() {
+const timeElement = document.getElementById('current-time');
+const greetingElement = document.getElementById('greeting-text');
+if (!timeElement || !greetingElement) return;
+
+const now = new Date();
+timeElement.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+const hours = now.getHours();
+let greeting = "Good Evening";
+if (hours < 12) greeting = "Good Morning";
+else if (hours < 17) greeting = "Good Afternoon";
+greetingElement.innerText = greeting;
+}
+setInterval(updateLiveClock, 1000);
+updateLiveClock();
+
+function uncheckAllBoxes() {
+const checkboxes = document.querySelectorAll('#hidden-workflow input[type="checkbox"]');
+checkboxes.forEach(chk => chk.checked = false);
+}
+
+function resetWorkflow() {
+uncheckAllBoxes();
+document.getElementById('hidden-workflow').style.display = 'none';
+document.getElementById('output-actions').style.display = 'none';
+const output = document.getElementById('text-output');
+output.style.color = "#9ca3af";
+output.value = "";
+output.placeholder = "Select options above and click 'Apply Changes'...";
+}
+
+function handleInputModification() {
+if (document.getElementById('hidden-workflow').style.display === 'block') {
+resetWorkflow();
+}
+}
+
+function getCheckboxStates() {
+const checkboxes = document.querySelectorAll('#hidden-workflow input[type="checkbox"]');
+const states = {};
+checkboxes.forEach(chk => {
+states[chk.id] = chk.checked;
+});
+return states;
+}
+
+function restoreCheckboxStates(states) {
+if (!states) return;
+for (const id in states) {
+const chk = document.getElementById(id);
+if (chk) chk.checked = states[id];
+}
+}
+
+function getCurrentState() {
+return {
+input: document.getElementById('text-input').value,
+output: document.getElementById('text-output').value,
+checkboxes: getCheckboxStates()
+};
+}
+
+function restoreState(state) {
+if (!state) return;
+document.getElementById('text-input').value = state.input;
+document.getElementById('text-output').value = state.output;
+restoreCheckboxStates(state.checkboxes);
+
+const actionsBox = document.getElementById('output-actions');
+const output = document.getElementById('text-output');
+if (state.output && !state.output.includes("❌")) {
+output.style.color = "#00ffcc";
+actionsBox.style.display = 'flex';
+} else {
+output.style.color = "#9ca3af";
+actionsBox.style.display = 'none';
+}
+analyzeText(true);
+}
+
+function pushState() {
+const state = getCurrentState();
+undoStack.push(state);
+if (undoStack.length > MAX_STACK_SIZE) {
+undoStack.shift();
+}
+redoStack = [];
+updateUndoRedoBtns();
+}
+
+function updateUndoRedoBtns() {
+document.getElementById('btn-undo').disabled = undoStack.length === 0;
+document.getElementById('btn-redo').disabled = redoStack.length === 0;
+}
+
+function undoText() {
+if (undoStack.length === 0) return;
+playCyberSound();
+const currentState = getCurrentState();
+redoStack.push(currentState);
+const prevState = undoStack.pop();
+restoreState(prevState);
+updateUndoRedoBtns();
+showToast("↩️ Undo Successful!");
+}
+
+function redoText() {
+if (redoStack.length === 0) return;
+playCyberSound();
+const currentState = getCurrentState();
+undoStack.push(currentState);
+const nextState = redoStack.pop();
+restoreState(nextState);
+updateUndoRedoBtns();
+showToast("↪️ Redo Successful!");
+}
+
+function analyzeText(isSilent = false) {
+if (!isSilent) playCyberSound();
+const text = document.getElementById('text-input').value;
+
+if (!text.trim()) {
+showToast("❌ Please enter some text first to analyze!");
+resetWorkflow();
+return;
+}
+
+const totalChars = text.length;
+const noSpaceChars = text.replace(/\s/g, '').length;
+const wordsArray = text.trim() ? text.trim().split(/\s+/) : [];
+const wordsCount = text.trim() ? wordsArray.length : 0;
+const linesCount = text ? text.split('\n').length : 0;
+const parasCount = text.trim() ? text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length : 0;
+const spacesCount = (text.match(/ /g) || []).length;
+
+const lettersCount = (text.match(/[\p{L}]/gu) || []).length;
+const digitsCount = (text.match(/[\p{N}]/gu) || []).length;
+
+const isIndic = /[\u0900-\u0DFF]/.test(text);
+const wpmRead = isIndic ? 140 : 200;
+const wpmSpeak = isIndic ? 100 : 130;
+
+const readSeconds = Math.ceil((wordsCount / wpmRead) * 60);
+const speakSeconds = Math.ceil((wordsCount / wpmSpeak) * 60);
+
+document.getElementById('stat-chars-total').innerText = totalChars;
+document.getElementById('stat-chars-nospace').innerText = noSpaceChars;
+document.getElementById('stat-words').innerText = wordsCount;
+document.getElementById('stat-lines').innerText = linesCount;
+document.getElementById('stat-paras').innerText = parasCount;
+document.getElementById('stat-spaces').innerText = spacesCount;
+document.getElementById('stat-letters').innerText = lettersCount;
+document.getElementById('stat-digits').innerText = digitsCount;
+
+document.getElementById('stat-read-time').innerText = readSeconds < 60 ? `${readSeconds}s` : `${Math.ceil(readSeconds/60)}m`;
+document.getElementById('stat-speak-time').innerText = speakSeconds < 60 ? `${speakSeconds}s` : `${Math.ceil(speakSeconds/60)}m`;
+
+document.getElementById('hidden-workflow').style.display = 'block';
+if (!isSilent) showToast("🔍 Text Analyzed & Options Unlocked!");
+}
+
+function handleSingleCaseOption(selectedId) {
+const caseIds = ['chk-uppercase', 'chk-lowercase', 'chk-titlecase', 'chk-sentencecase'];
+caseIds.forEach(id => {
+if (id !== selectedId) document.getElementById(id).checked = false;
+});
+}
+
+function handleExclusiveGroup(group, selectedId) {
+let ids = [];
+if (group === 'reverse') ids = ['chk-reverse-text', 'chk-reverse-words'];
+if (group === 'sort') ids = ['chk-sort-az', 'chk-sort-za'];
+if (group === 'extract') ids = ['chk-extract-emails', 'chk-extract-urls', 'chk-extract-phones'];
+
+ids.forEach(id => {
+if (id !== selectedId) document.getElementById(id).checked = false;
+});
+}
+
+function processText() {
+playCyberSound();
+let text = document.getElementById('text-input').value;
+const output = document.getElementById('text-output');
+const actionsBox = document.getElementById('output-actions');
+
+if (!text) {
+output.style.color = "#ef4444";
+output.value = "❌ Please enter or paste some text first!";
+actionsBox.style.display = 'none';
+return;
+}
+
+const checkboxes = document.querySelectorAll('#hidden-workflow input[type="checkbox"]');
+const isAnyChecked = Array.from(checkboxes).some(chk => chk.checked);
+
+if (!isAnyChecked) {
+showToast("⚠️ Please select at least one option before applying!");
+return;
+}
+
+pushState();
+
+const doUpper = document.getElementById('chk-uppercase').checked;
+const doLower = document.getElementById('chk-lowercase').checked;
+const doTitle = document.getElementById('chk-titlecase').checked;
+const doSentence = document.getElementById('chk-sentencecase').checked;
+
+const doTrim = document.getElementById('chk-trim').checked;
+const doExtraSpaces = document.getElementById('chk-extra-spaces').checked;
+const doRemoveNewlines = document.getElementById('chk-remove-newlines').checked;
+const doStripHtml = document.getElementById('chk-strip-html').checked;
+const doRemoveDupLines = document.getElementById('chk-remove-dup-lines').checked;
+const doRemoveEmptyLines = document.getElementById('chk-remove-empty-lines').checked;
+const doRemoveNumbers = document.getElementById('chk-remove-numbers').checked;
+const doRemoveSymbols = document.getElementById('chk-remove-symbols').checked;
+const doRemoveEmojis = document.getElementById('chk-remove-emojis').checked;
+
+const doRevText = document.getElementById('chk-reverse-text').checked;
+const doRevWords = document.getElementById('chk-reverse-words').checked;
+const doSortAZ = document.getElementById('chk-sort-az').checked;
+const doSortZA = document.getElementById('chk-sort-za').checked;
+
+const doExtEmails = document.getElementById('chk-extract-emails').checked;
+const doExtURLs = document.getElementById('chk-extract-urls').checked;
+const doExtPhones = document.getElementById('chk-extract-phones').checked;
+
+if (doExtEmails) {
+const emails = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g);
+text = emails ? [...new Set(emails)].join('\n') : "No email addresses found.";
+} else if (doExtURLs) {
+const urls = text.match(/https?:\/\/[^\s/$.?#].[^\s]*/g);
+text = urls ? [...new Set(urls)].join('\n') : "No URLs found.";
+} else if (doExtPhones) {
+const phoneRegex = /(?:\+?\d{1,3}[-.\s]?)?(?:\(?\d{2,5}\)?[-.\s]?)?\d{3,4}[-.\s]?\d{3,4}/g;
+const phones = text.match(phoneRegex);
+text = phones ? [...new Set(phones)].join('\n') : "No phone numbers found.";
+} else {
+
+if (doStripHtml) {
+text = text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+text = text.replace(/<[^>]*>/g, '');
+}
+
+if (doRemoveEmojis) {
+text = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1F600}-\u{1F64F}\u{1F90C}-\u{1F93A}]/gu, '');
+}
+
+if (doRemoveNumbers) {
+text = text.replace(/\d+/g, '');
+}
+
+if (doRemoveSymbols) {
+text = text.replace(/[^\p{L}\p{N}\s]/gu, '');
+}
+
+if (doRemoveNewlines) {
+text = text.replace(/[\r\n]+/g, ' ');
+}
+
+if (doExtraSpaces) {
+text = text.replace(/\s+/g, ' ');
+}
+
+if (doTrim) {
+text = text.trim();
+}
+
+if (doRemoveEmptyLines) {
+text = text.split('\n').filter(line => line.trim() !== '').join('\n');
+}
+
+if (doRemoveDupLines) {
+const lines = text.split('\n');
+text = [...new Set(lines)].join('\n');
+}
+
+if (doSortAZ) {
+text = text.split('\n').sort((a, b) => a.localeCompare(b)).join('\n');
+} else if (doSortZA) {
+text = text.split('\n').sort((a, b) => b.localeCompare(a)).join('\n');
+}
+
+if (doRevText) {
+text = Array.from(text).reverse().join('');
+} else if (doRevWords) {
+text = text.split(/\s+/).reverse().join(' ');
+}
+
+if (doUpper) {
+text = text.toUpperCase();
+} else if (doLower) {
+text = text.toLowerCase();
+} else if (doTitle) {
+text = text.toLowerCase().replace(/(?:^|\s|\p{P})\p{L}/gu, m => m.toUpperCase());
+} else if (doSentence) {
+text = text.toLowerCase().replace(/(^\s*|[\.!\?]\s*)([\p{L}])/gu, (m, p1, p2) => p1 + p2.toUpperCase());
+}
+}
+
+output.style.color = "#00ffcc";
+output.value = text;
+actionsBox.style.display = 'flex';
+showToast("⚡ Text Processed Successfully!");
+}
+
+function copyToClipboard() {
+const text = document.getElementById('text-output').value;
+if (!text || text.includes("Select options") || text.includes("❌")) return;
+
+playCyberSound();
+
+function handleCopySuccess() {
+document.getElementById('copy-icon').innerText = "✅";
+document.getElementById('copy-text').innerText = "Copied!";
+showToast("✅ Output copied to clipboard!");
+
+setTimeout(() => {
+document.getElementById('copy-icon').innerText = "📋";
+document.getElementById('copy-text').innerText = "Copy";
+}, 3000);
+}
+
+if (navigator.clipboard && window.isSecureContext) {
+navigator.clipboard.writeText(text).then(handleCopySuccess).catch(() => fallbackCopyText(text, handleCopySuccess));
+} else {
+fallbackCopyText(text, handleCopySuccess);
+}
+}
+
+function fallbackCopyText(text, callback) {
+const textArea = document.createElement("textarea");
+textArea.value = text;
+textArea.style.position = "fixed";
+textArea.style.left = "-999999px";
+document.body.appendChild(textArea);
+textArea.focus();
+textArea.select();
+try {
+document.execCommand('copy');
+callback();
+} catch (err) {
+showToast("❌ Copy failed.");
+}
+document.body.removeChild(textArea);
+}
+
+function downloadText() {
+try {
+const text = document.getElementById('text-output').value;
+if (!text || text.includes("Select options") || text.includes("❌")) return;
+
+playCyberSound();
+const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+const a = document.createElement("a");
+a.href = URL.createObjectURL(blob);
+a.download = "processed_text.txt";
+document.body.appendChild(a);
+a.click();
+
+setTimeout(() => {
+URL.revokeObjectURL(a.href);
+if (a.parentNode) a.parentNode.removeChild(a);
+}, 100);
+
+showToast("💾 Text downloaded as processed_text.txt");
+} catch (e) {
+showToast("❌ Failed to download file.");
+}
+}
+
+function escapeHtml(str) {
+return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function printText() {
+try {
+const text = document.getElementById('text-output').value;
+if (!text || text.includes("Select options") || text.includes("❌")) return;
+
+playCyberSound();
+const printWin = window.open('', '_blank');
+if (!printWin) {
+showToast("❌ Pop-up blocked! Please allow pop-ups for printing.");
+return;
+}
+const safeText = escapeHtml(text);
+printWin.document.write(`<pre style="font-family: monospace; font-size: 14px; padding: 20px; white-space: pre-wrap; word-wrap: break-word;">${safeText}</pre>`);
+printWin.document.close();
+printWin.focus();
+printWin.print();
+printWin.close();
+} catch (e) {
+showToast("❌ Print error occurred.");
+}
+}
+
+function swapInputOutput() {
+const outputText = document.getElementById('text-output').value;
+if (!outputText || outputText.includes("Select options") || outputText.includes("❌")) return;
+
+playCyberSound();
+pushState();
+document.getElementById('text-input').value = outputText;
+analyzeText();
+showToast("🔀 Output swapped into Input!");
+}
+
+function shareOutput() {
+try {
+const text = document.getElementById('text-output').value;
+if (!text || text.includes("Select options") || text.includes("❌")) return;
+
+playCyberSound();
+
+if (navigator.share) {
+navigator.share({ title: 'Processed Text', text: text }).then(() => {
+showToast("📤 Shared successfully!");
+}).catch(() => {});
+} else {
+copyToClipboard();
+showToast("📋 Share not supported on this browser. Output copied to clipboard!");
+}
+} catch (e) {
+showToast("❌ Error while sharing.");
+}
+}
+
+function clearAll() {
+playCyberSound();
+document.getElementById('text-input').value = "";
+undoStack = [];
+redoStack = [];
+updateUndoRedoBtns();
+resetWorkflow();
+showToast("🗑️ Input, Output & Options Reset!");
+}
+
+document.addEventListener('keydown', function(e) {
+if (e.ctrlKey && e.key === 'Enter') {
+e.preventDefault();
+if (document.getElementById('hidden-workflow').style.display === 'block') {
+processText();
+} else {
+analyzeText();
+}
+}
+
+if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+e.preventDefault();
+copyToClipboard();
+}
+
+if (e.key === 'Escape') {
+clearAll();
+}
+});
+
+function showToast(message) {
+const toast = document.getElementById('toast-msg');
+if (toastTimeout) clearTimeout(toastTimeout);
+toast.innerText = message;
+toast.style.display = 'block';
+toastTimeout = setTimeout(() => {
+toast.style.display = 'none';
+}, 3000);
+}
+</script>
+
+</body>
+
+</html>

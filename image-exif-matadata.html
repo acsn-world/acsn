@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pro Image EXIF Metadata &amp; Forensic Analyzer | ACSN Tools</title>
+
+<meta name="description" content="Extract hidden camera parameters, GPS coordinates, capture timestamp, and EXIF metadata. Strip EXIF privacy data and clean images client-side.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<!-- EXIF JS LIBRARY FOR DEEP METADATA EXTRACTION -->
+<script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+
+<style>
+.tool-container {
+max-width: 900px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.purpose-box {
+background-color: #0f172a;
+border-left: 4px solid #2563eb;
+padding: 18px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.purpose-box h2 {
+color: #38bdf8;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.purpose-box p {
+color: #cbd5e1;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* KEYBOARD ACCESSIBLE DROPZONE STYLING */
+.file-dropzone {
+border: 2px dashed #334155;
+background-color: #0f172a;
+padding: 35px 20px;
+text-align: center;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+outline: none;
+}
+.file-dropzone:hover, .file-dropzone:focus {
+border-color: #00ffcc;
+background-color: rgba(0, 255, 204, 0.05);
+box-shadow: 0 0 0 3px rgba(0, 255, 204, 0.25);
+}
+.dropzone-icon {
+font-size: 2.5rem;
+margin-bottom: 10px;
+}
+.dropzone-text {
+color: #9ca3af;
+font-size: 0.92rem;
+margin-top: 6px;
+}
+
+/* IMAGE PREVIEW BOX */
+.preview-wrapper {
+display: none;
+margin-top: 25px;
+text-align: center;
+background-color: #0f172a;
+padding: 20px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+}
+.img-preview {
+max-width: 100%;
+max-height: 350px;
+border-radius: 8px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+object-fit: contain;
+}
+
+/* ANALYZE BUTTON */
+.analyze-btn-wrapper {
+display: none;
+margin-top: 20px;
+text-align: center;
+}
+.analyze-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 16px 32px;
+font-size: 1.05rem;
+font-weight: 700;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+gap: 10px;
+box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+outline: none;
+}
+.analyze-btn:hover, .analyze-btn:focus {
+background-color: #1d4ed8;
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+outline: 2px solid #00ffcc;
+}
+
+/* RESULTS GRID */
+#results-container {
+display: none;
+margin-top: 25px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.section-subheading {
+color: #00ffcc;
+font-size: 1rem;
+font-weight: 700;
+margin: 22px 0 12px 0;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.grid-stats {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 15px;
+margin-bottom: 20px;
+}
+.stat-card {
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+}
+.stat-card .label {
+color: #9ca3af;
+font-size: 0.82rem;
+margin-bottom: 6px;
+text-transform: uppercase;
+font-weight: 600;
+}
+.stat-card .value {
+color: #ffffff;
+font-size: 1.02rem;
+font-weight: 700;
+word-break: break-all;
+font-family: monospace;
+}
+
+.map-btn {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+background-color: #059669;
+color: #ffffff;
+padding: 8px 14px;
+border-radius: 6px;
+text-decoration: none;
+font-size: 0.85rem;
+font-weight: 600;
+margin-top: 6px;
+transition: background-color 0.2s;
+}
+.map-btn:hover, .map-btn:focus {
+background-color: #10b981;
+outline: 2px solid #00ffcc;
+}
+
+/* PRIVACY STRIP BUTTON */
+.action-btn-wrapper {
+margin-top: 25px;
+text-align: center;
+}
+.clean-btn {
+background-color: #059669;
+color: #ffffff;
+border: none;
+padding: 16px 28px;
+font-size: 1rem;
+font-weight: 700;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+gap: 10px;
+box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+outline: none;
+}
+.clean-btn:hover, .clean-btn:focus {
+background-color: #10b981;
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+outline: 2px solid #00ffcc;
+}
+
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px 18px;
+background-color: rgba(16, 185, 129, 0.15);
+border: 1px solid #10b981;
+border-radius: 8px;
+display: none;
+text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Pro Image EXIF Metadata &amp; Forensic Analyzer</h1>
+
+<p>
+Extract hidden device parameters, GPS location tags, camera settings, and AI generation metadata embedded in any image.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="Image Analysis Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="purpose-box">
+  <h2>🎯 What is this tool created for?</h2>
+  <p>
+    This Image Metadata &amp; Privacy Analyzer extracts hidden EXIF parameters embedded inside image files. Upload any photo, click analyze to reveal camera hardware specifications, capture date/time, dimensions, AI origin indicators, and hidden GPS location tags.
+  </p>
+</div>
+
+<!-- KEYBOARD ACCESSIBLE DROPZONE -->
+<div 
+  class="file-dropzone" 
+  id="dropzone-box"
+  tabindex="0" 
+  role="button"
+  aria-label="Upload image file to analyze metadata"
+  onclick="document.getElementById('image-input').click()"
+  onkeydown="handleDropzoneKeyDown(event)"
+>
+  <div class="dropzone-icon">🖼️</div>
+  <strong>Click, Drag &amp; Drop, or Press Enter to Select Image</strong>
+  <div class="dropzone-text">Supports JPG, PNG, WEBP, TIFF image formats</div>
+</div>
+<input type="file" id="image-input" accept="image/*" style="display: none;" onchange="handleFileSelected(event)">
+
+<!-- IMAGE PREVIEW AREA -->
+<div id="preview-wrapper" class="preview-wrapper">
+  <img id="image-preview" class="img-preview" alt="Uploaded Image Preview">
+</div>
+
+<!-- ANALYZE TRIGGER BUTTON (CLICK TO EXTRACT DATA) -->
+<div id="analyze-btn-wrapper" class="analyze-btn-wrapper">
+  <button type="button" class="analyze-btn" tabindex="0" onclick="startImageAnalysis()">
+    ⚡ Analyze Image Metadata
+  </button>
+</div>
+
+<!-- RESULTS CONTAINER -->
+<div id="results-container">
+
+  <!-- FILE GENERAL METADATA -->
+  <div class="section-subheading">📄 File &amp; Image Specifications</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">File Name</div>
+      <div class="value" id="meta-filename" style="color: #00ffcc;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">File Size</div>
+      <div class="value" id="meta-filesize" style="color: #38bdf8;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Mime Format Type</div>
+      <div class="value" id="meta-filetype">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Image Resolution</div>
+      <div class="value" id="meta-dimensions" style="color: #10b981;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Megapixels (MP)</div>
+      <div class="value" id="meta-megapixels">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Aspect Ratio</div>
+      <div class="value" id="meta-aspectratio">-</div>
+    </div>
+  </div>
+
+  <!-- AI & CAMERA HARDWARE METADATA -->
+  <div class="section-subheading">📷 Camera Hardware &amp; AI Origin Audit</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">AI vs Real Audit</div>
+      <div class="value" id="meta-ai-audit" style="color: #f59e0b;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Device Manufacturer</div>
+      <div class="value" id="meta-make">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Camera Model Name</div>
+      <div class="value" id="meta-model">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Software / Editing Engine</div>
+      <div class="value" id="meta-software">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Lens Aperture (f-stop)</div>
+      <div class="value" id="meta-aperture">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Shutter Exposure Speed</div>
+      <div class="value" id="meta-shutter">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">ISO Speed Rating</div>
+      <div class="value" id="meta-iso">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Focal Length</div>
+      <div class="value" id="meta-focal">-</div>
+    </div>
+  </div>
+
+  <!-- DATE & TIMESTAMP METADATA -->
+  <div class="section-subheading">📅 Timestamp &amp; Orientation Meta</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Original Date &amp; Time Captured</div>
+      <div class="value" id="meta-datetime" style="color: #a855f7;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">EXIF Orientation Angle</div>
+      <div class="value" id="meta-orientation">-</div>
+    </div>
+  </div>
+
+  <!-- GPS LOCATION METADATA -->
+  <div class="section-subheading">📍 Embedded GPS Location Tags</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Latitude Coordinate</div>
+      <div class="value" id="meta-gps-lat">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Longitude Coordinate</div>
+      <div class="value" id="meta-gps-lng">-</div>
+    </div>
+    <div class="stat-card" style="grid-column: 1 / -1;">
+      <div class="label">Map Preview &amp; Location Verification</div>
+      <div class="value" id="meta-gps-link">No GPS Data Embedded</div>
+    </div>
+  </div>
+
+  <!-- PRIVACY FEATURE BUTTON: STRIP EXIF & DOWNLOAD -->
+  <div class="action-btn-wrapper">
+    <button type="button" class="clean-btn" tabindex="0" onclick="stripExifAndDownload()">
+      🧹 Strip EXIF &amp; Download Clean Image
+    </button>
+  </div>
+
+</div>
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let currentLoadedFile = null;
+
+function playClickSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
+    osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) {}
+}
+
+function handleDropzoneKeyDown(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    document.getElementById('image-input').click();
+  }
+}
+
+// STEP 1: FILE SELECTED -> SHOW PREVIEW & ANALYZE BUTTON ONLY
+function handleFileSelected(event) {
+  playClickSound();
+  const file = event.target.files[0];
+  if (!file) return;
+
+  currentLoadedFile = file;
+
+  const previewWrapper = document.getElementById('preview-wrapper');
+  const imgPreview = document.getElementById('image-preview');
+  const analyzeBtnWrapper = document.getElementById('analyze-btn-wrapper');
+  const resultsContainer = document.getElementById('results-container');
+
+  // Hide old results if analyzing a new image
+  resultsContainer.style.display = 'none';
+
+  // Show Image Preview
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    imgPreview.src = e.target.result;
+    previewWrapper.style.display = 'block';
+    analyzeBtnWrapper.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+
+  showToast("🖼️ Image loaded! Click 'Analyze Image Metadata' below.");
+}
+
+// STEP 2: USER CLICKS ANALYZE BUTTON -> PROCESS & SHOW DATA
+function startImageAnalysis() {
+  playClickSound();
+  if (!currentLoadedFile) return;
+
+  const file = currentLoadedFile;
+  const resultsContainer = document.getElementById('results-container');
+
+  // Calculate Dimensions & Megapixels
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.src = e.target.result;
+    img.onload = function() {
+      const width = this.width;
+      const height = this.height;
+      const megapixels = ((width * height) / 1000000).toFixed(2);
+      
+      document.getElementById('meta-dimensions').innerText = `${width} x ${height} px`;
+      document.getElementById('meta-megapixels').innerText = `${megapixels} MP`;
+      document.getElementById('meta-aspectratio').innerText = calculateAspectRatio(width, height);
+    };
+  };
+  reader.readAsDataURL(file);
+
+  // File Specs
+  document.getElementById('meta-filename').innerText = file.name;
+  document.getElementById('meta-filesize').innerText = formatBytes(file.size);
+  document.getElementById('meta-filetype').innerText = file.type || 'image/jpeg';
+
+  // Read EXIF Data
+  EXIF.getData(file, function() {
+    const exifData = EXIF.getAllTags(this);
+
+    const make = exifData.Make || '';
+    const model = exifData.Model || '';
+    const software = exifData.Software || '';
+
+    document.getElementById('meta-make').innerText = make || 'Not Embedded';
+    document.getElementById('meta-model').innerText = model || 'Not Embedded';
+    document.getElementById('meta-software').innerText = software || 'Not Embedded';
+    document.getElementById('meta-aperture').innerText = exifData.FNumber ? `f/${exifData.FNumber}` : 'Not Embedded';
+    document.getElementById('meta-shutter').innerText = exifData.ExposureTime ? `1/${Math.round(1 / exifData.ExposureTime)}s` : 'Not Embedded';
+    document.getElementById('meta-iso').innerText = exifData.ISOSpeedRatings ? `ISO ${exifData.ISOSpeedRatings}` : 'Not Embedded';
+    document.getElementById('meta-focal').innerText = exifData.FocalLength ? `${exifData.FocalLength}mm` : 'Not Embedded';
+    document.getElementById('meta-datetime').innerText = exifData.DateTimeOriginal || exifData.DateTime || 'Not Embedded';
+    document.getElementById('meta-orientation').innerText = exifData.Orientation ? `Code ${exifData.Orientation}` : 'Normal / Standard';
+
+    // AI Generated vs Real Image Heuristic Audit
+    const aiAuditElem = document.getElementById('meta-ai-audit');
+    const softwareLower = software.toLowerCase();
+    
+    if (softwareLower.includes('midjourney') || softwareLower.includes('dall-e') || softwareLower.includes('stable diffusion') || softwareLower.includes('chatgpt')) {
+      aiAuditElem.innerText = "🤖 AI Generated Image (Confirmed Tag)";
+      aiAuditElem.style.color = "#ef4444";
+    } else if (!make && !model && !exifData.FNumber && !exifData.ExposureTime) {
+      aiAuditElem.innerText = "⚠️ Likely AI / Synthetic / Stripped Image";
+      aiAuditElem.style.color = "#f59e0b";
+    } else {
+      aiAuditElem.innerText = "📷 Real Camera Capture (Hardware Exif Verified)";
+      aiAuditElem.style.color = "#10b981";
+    }
+
+    // ROBUST GPS EXTRACTION
+    if (exifData.GPSLatitude && exifData.GPSLongitude) {
+      try {
+        const lat = convertDMSToDD(exifData.GPSLatitude, exifData.GPSLatitudeRef);
+        const lng = convertDMSToDD(exifData.GPSLongitude, exifData.GPSLongitudeRef);
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+          document.getElementById('meta-gps-lat').innerText = lat.toFixed(6);
+          document.getElementById('meta-gps-lng').innerText = lng.toFixed(6);
+          document.getElementById('meta-gps-link').innerHTML = `
+            <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" class="map-btn" tabindex="0">
+              🗺️ View Coordinates on Google Maps
+            </a>
+          `;
+        } else {
+          setGpsNotFound();
+        }
+      } catch (e) {
+        setGpsNotFound();
+      }
+    } else {
+      setGpsNotFound();
+    }
+
+    resultsContainer.style.display = 'block';
+    showToast("✅ Image EXIF Forensic Analysis Complete!");
+  });
+}
+
+function setGpsNotFound() {
+  document.getElementById('meta-gps-lat').innerText = 'Not Embedded';
+  document.getElementById('meta-gps-lng').innerText = 'Not Embedded';
+  document.getElementById('meta-gps-link').innerText = 'No GPS Location Embedded in this image';
+}
+
+function convertDMSToDD(dms, ref) {
+  if (!dms) return NaN;
+  let degrees = 0, minutes = 0, seconds = 0;
+
+  const parseVal = (val) => {
+    if (typeof val === 'number') return val;
+    if (typeof val === 'object' && val !== null) {
+      if ('numerator' in val && 'denominator' in val && val.denominator !== 0) {
+        return val.numerator / val.denominator;
+      }
+    }
+    return parseFloat(val) || 0;
+  };
+
+  if (Array.isArray(dms) && dms.length >= 3) {
+    degrees = parseVal(dms[0]);
+    minutes = parseVal(dms[1]);
+    seconds = parseVal(dms[2]);
+  } else if (typeof dms === 'number') {
+    return dms;
+  }
+
+  let dd = degrees + (minutes / 60) + (seconds / 3600);
+  if (ref === "S" || ref === "W") dd = dd * -1;
+  return dd;
+}
+
+function stripExifAndDownload() {
+  playClickSound();
+  if (!currentLoadedFile) return;
+
+  const img = new Image();
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    img.src = e.target.result;
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `clean_${currentLoadedFile.name.split('.')[0]}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("🧹 EXIF Data Stripped & Clean Image Saved!");
+      }, 'image/jpeg', 0.95);
+    };
+  };
+
+  reader.readAsDataURL(currentLoadedFile);
+}
+
+function calculateAspectRatio(w, h) {
+  const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+  const divider = gcd(w, h);
+  return `${w / divider}:${h / divider}`;
+}
+
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = msg;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
+}
+</script>
+
+</body>
+
+</html>

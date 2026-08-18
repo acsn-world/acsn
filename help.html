@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Help & Contact | ACSN Advanced Cyber Security Network</title>
+
+<meta name="description" content="Get help, support, contact ACSN directly, or join our official WhatsApp and YouTube channels.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Help &amp; Contact ACSN</h1>
+
+<p>
+Get support, connect with our official channels, or send your questions and feedback directly to our team.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="tools.html" class="primary-button">Explore Tools</a>
+<a href="software.html" class="secondary-button">Explore Software</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="hero.png" alt="ACSN Help & Support Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<!-- SECTION 1: DIRECT CHANNELS & EMAIL -->
+<section class="explore">
+<h2>Direct Support &amp; Social Channels</h2>
+<p class="section-intro">
+Connect with ACSN on our official platforms or send us an email directly for official inquiries and updates.
+</p>
+
+<div class="cards">
+<article class="card">
+<h3>WhatsApp Channel</h3>
+<p>
+Join our official WhatsApp channel to receive instant security updates, malware alerts, and new guide announcements.
+</p>
+<a href="https://whatsapp.com/channel/0029Vb8LvvmIt5rwdPjurM2w" target="_blank" rel="noopener">Join WhatsApp Channel</a>
+</article>
+
+<article class="card">
+<h3>Official Contact Email</h3>
+<p>
+For direct support, official queries, or business inquiries, feel free to reach out to our team via email.
+</p>
+<a href="mailto:ankushwebsite191808@gmail.com">Send Official Email</a>
+</article>
+
+<article class="card">
+<h3>YouTube Channel</h3>
+<p>
+Subscribe to our YouTube channel for video tutorials, practical cybersecurity walkthroughs, and software reviews.
+</p>
+<a href="https://youtube.com/@indiatechpioneers?si=sPU-sHhUJFJIy4Ph" target="_blank" rel="noopener">Visit YouTube Channel</a>
+</article>
+</div>
+</section>
+
+<!-- SECTION 2: CONTACT FORM & SECURITY NOTICE -->
+<section class="explore">
+<h2>Send Your Question or Feedback</h2>
+<p class="section-intro">
+Fill out the form below to contact ACSN. Please provide correct information so we can understand your question or feedback.
+</p>
+
+<div class="cards">
+<article class="card" style="grid-column: 1 / -1;">
+<h3>Contact Form</h3>
+<p>Please enter your details and message below:</p>
+
+<form id="telegramForm" class="search-box" style="flex-direction: column; max-width: 100%; align-items: stretch; margin: 0;">
+
+<div style="margin-bottom: 15px; text-align: left;">
+<label for="name" style="color: var(--text-primary); font-weight: 500;">Full Name *</label>
+<input type="text" id="name" name="name" placeholder="Enter your full name" required style="margin-top: 5px;">
+</div>
+
+<div style="margin-bottom: 15px; text-align: left;">
+<label for="email" style="color: var(--text-primary); font-weight: 500;">Email Address *</label>
+<input type="email" id="email" name="email" placeholder="Enter your email address" required style="margin-top: 5px;">
+</div>
+
+<div style="margin-bottom: 15px; text-align: left;">
+<label for="subject" style="color: var(--text-primary); font-weight: 500;">Subject</label>
+<input type="text" id="subject" name="subject" placeholder="Enter subject" style="margin-top: 5px;">
+</div>
+
+<div style="margin-bottom: 20px; text-align: left;">
+<label for="message" style="color: var(--text-primary); font-weight: 500;">Your Question or Feedback *</label>
+<textarea id="message" name="message" rows="6" placeholder="Write your question or feedback here" required style="width: 100%; padding: 12px 18px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary); font-size: 0.95rem; font-family: inherit; margin-top: 5px; outline: none; resize: vertical;"></textarea>
+</div>
+
+<button type="submit" class="search-button" id="submitBtn" style="width: 100%; padding: 14px;">Send Message</button>
+
+<p id="statusMsg" style="font-weight: bold; margin-top: 15px; text-align: center;"></p>
+
+</form>
+</article>
+
+<article class="card" style="grid-column: 1 / -1;">
+<h3>Security Notice</h3>
+<p>
+Please do not share passwords, OTPs, bank details, or any other sensitive personal information through this contact form.
+</p>
+</article>
+</div>
+</section>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="help.html">Contact</a>
+<a href="privacy-policy.html">Privacy Policy</a>
+<a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+
+<script>
+document.getElementById('telegramForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const botToken = "8812758809:AAHl0V4GtL_vT740MHpLbeJkkldJlC_wEXg"; 
+  const chatId = "8740627194"; 
+
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const subject = document.getElementById('subject').value || "No Subject";
+  const message = document.getElementById('message').value;
+  
+  const statusMsg = document.getElementById('statusMsg');
+  const submitBtn = document.getElementById('submitBtn');
+
+  statusMsg.style.color = "#2563eb";
+  statusMsg.innerHTML = "Sending message...";
+  submitBtn.disabled = true;
+
+  const text = `📬 *New Message from ACSN Website!*%0A%0A👤 *Name:* ${name}%0A📧 *Email:* ${email}%0A📌 *Subject:* ${subject}%0A💬 *Message:* ${message}`;
+
+  const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${text}&parse_mode=Markdown`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      if (data.ok) {
+        statusMsg.style.color = "#00ffcc";
+        statusMsg.innerHTML = "✅ Message sent successfully!";
+        document.getElementById('telegramForm').reset();
+      } else {
+        statusMsg.style.color = "#ef4444";
+        statusMsg.innerHTML = "❌ Failed to send message. Please check bot settings.";
+      }
+      submitBtn.disabled = false;
+    })
+    .catch(error => {
+      statusMsg.style.color = "#ef4444";
+      statusMsg.innerHTML = "❌ Network error. Please try again later.";
+      submitBtn.disabled = false;
+    });
+});
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pro Browser Privacy &amp; Fingerprint Forensic Suite | ACSN Tools</title>
+
+<meta name="description" content="Pro-grade browser privacy and device fingerprinting suite. Audit Canvas hashing, WebRTC IP leaks, AudioContext signatures, hardware telemetry, and browser capabilities client-side.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 950px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.purpose-box {
+background-color: #0f172a;
+border-left: 4px solid #2563eb;
+padding: 18px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.purpose-box h2 {
+color: #38bdf8;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.purpose-box p {
+color: #cbd5e1;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* BUTTON STYLING */
+.scan-btn-wrapper {
+text-align: center;
+margin: 25px 0;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 16px 32px;
+font-size: 1.05rem;
+font-weight: 700;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-2px);
+box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+}
+
+/* RESULTS PANEL */
+#results-container {
+display: none;
+margin-top: 25px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* PRIVACY SCORE CARD */
+.score-card {
+padding: 20px;
+border-radius: 8px;
+text-align: center;
+margin-bottom: 25px;
+border: 1px solid #1e293b;
+background-color: #0f172a;
+}
+.score-title {
+font-size: 0.82rem;
+text-transform: uppercase;
+color: #9ca3af;
+font-weight: 700;
+letter-spacing: 1px;
+margin-bottom: 6px;
+}
+.score-value {
+font-size: 2.2rem;
+font-weight: 900;
+margin-bottom: 4px;
+font-family: monospace;
+}
+.score-desc {
+font-size: 0.88rem;
+color: #cbd5e1;
+line-height: 1.5;
+}
+
+.score-high {
+border-color: #ef4444;
+background-color: rgba(239, 68, 68, 0.1);
+color: #ef4444;
+}
+.score-warn {
+border-color: #f59e0b;
+background-color: rgba(245, 158, 11, 0.1);
+color: #f59e0b;
+}
+.score-safe {
+border-color: #10b981;
+background-color: rgba(16, 185, 129, 0.1);
+color: #10b981;
+}
+
+.section-subheading {
+color: #00ffcc;
+font-size: 1rem;
+font-weight: 700;
+margin: 22px 0 12px 0;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+/* GRID LAYOUT FOR DATA STATS */
+.grid-stats {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 15px;
+margin-bottom: 20px;
+}
+.stat-card {
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+}
+.stat-card .label {
+color: #9ca3af;
+font-size: 0.82rem;
+margin-bottom: 6px;
+text-transform: uppercase;
+font-weight: 600;
+}
+.stat-card .value {
+color: #ffffff;
+font-size: 1.05rem;
+font-weight: 700;
+word-break: break-all;
+font-family: monospace;
+}
+
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px 18px;
+background-color: rgba(16, 185, 129, 0.15);
+border: 1px solid #10b981;
+border-radius: 8px;
+display: none;
+text-align: center;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Pro Browser Privacy &amp; Fingerprint Forensic Suite</h1>
+
+<p>
+Demonstrating how ordinary websites extract hardware telemetry, battery status, graphics engines, and browser tracking fingerprints without special permissions.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="Privacy Footprint Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<!-- PURPOSE OF THE TOOL BOX -->
+<div class="purpose-box">
+  <h2>🎯 What is this tool created for?</h2>
+  <p>
+    <strong>Primary Purpose:</strong> This Cyber Security &amp; Privacy Awareness tool demonstrates how much sensitive hardware, battery, display, and network telemetry any standard website can collect about your device silently through your web browser — <em>without requesting any special permissions</em>. It helps users audit their browser tracking uniqueness and understand online fingerprinting exposure.
+  </p>
+</div>
+
+<!-- MAIN TRIGGER BUTTON -->
+<div class="scan-btn-wrapper">
+  <button class="action-btn" onclick="executeProAudit()">
+    ⚡ Execute Pro Privacy &amp; Fingerprint Audit
+  </button>
+</div>
+
+<!-- RESULTS AREA -->
+<div id="results-container">
+  
+  <!-- TRACKING UNIQUENESS SCORE CARD -->
+  <div id="score-card-container" class="score-card score-high">
+    <div class="score-title">TRACKING UNIQUENESS &amp; PRIVACY RISK</div>
+    <div class="score-value" id="res-risk-score">Calculating...</div>
+    <div class="score-desc" id="res-risk-desc">Analyzing browser tracking footprint...</div>
+  </div>
+
+  <!-- CRYPTOGRAPHIC FINGERPRINT SIGNATURES -->
+  <div class="section-subheading">🔐 Cryptographic Fingerprint Hashes</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Canvas Fingerprint Hash</div>
+      <div class="value" id="res-canvas-hash" style="color: #00ffcc;">Generating...</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">AudioContext Signature</div>
+      <div class="value" id="res-audio-hash" style="color: #a855f7;">Generating...</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">WebRTC Local IP Leak</div>
+      <div class="value" id="res-webrtc-ip" style="color: #f59e0b;">Scanning...</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Incognito / Private Mode</div>
+      <div class="value" id="res-incognito-status">-</div>
+    </div>
+  </div>
+
+  <!-- BATTERY & HARDWARE STATS -->
+  <div class="section-subheading">🔋 Live Battery &amp; Hardware Telemetry</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Battery Percentage</div>
+      <div class="value" id="res-battery-level" style="color: #00ffcc;">Detecting...</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Charging Status</div>
+      <div class="value" id="res-battery-charging">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">CPU Logic Cores</div>
+      <div class="value" id="res-cpu-cores">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Device Memory (RAM)</div>
+      <div class="value" id="res-device-ram" style="color: #38bdf8;">-</div>
+    </div>
+  </div>
+
+  <!-- NETWORK & CONNECTION INTEL -->
+  <div class="section-subheading">📶 Connection &amp; Network Intelligence</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Network Connection Type</div>
+      <div class="value" id="res-net-type">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Estimated Downlink Speed</div>
+      <div class="value" id="res-net-speed" style="color: #10b981;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Network Latency (RTT)</div>
+      <div class="value" id="res-net-rtt">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Data Saver Mode</div>
+      <div class="value" id="res-net-saver">-</div>
+    </div>
+  </div>
+
+  <!-- DISPLAY & GRAPHICS (GPU) -->
+  <div class="section-subheading">🖥️ Display &amp; Graphics Hardware</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Screen Resolution</div>
+      <div class="value" id="res-screen-res">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Color Depth &amp; Pixel Ratio</div>
+      <div class="value" id="res-color-depth">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Graphics Card (GPU) Engine</div>
+      <div class="value" id="res-gpu-render" style="color: #f59e0b;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Screen Orientation</div>
+      <div class="value" id="res-screen-orientation">-</div>
+    </div>
+  </div>
+
+  <!-- SENSORS & HARDWARE APIS -->
+  <div class="section-subheading">⚡ Hardware Sensors &amp; Device APIs</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Bluetooth API Support</div>
+      <div class="value" id="res-bluetooth-support">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">USB Device API Support</div>
+      <div class="value" id="res-usb-support">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">WebHID (Gamepads) API</div>
+      <div class="value" id="res-hid-support">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">WebMIDI Audio API</div>
+      <div class="value" id="res-midi-support">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Motion Sensors (Gyroscope)</div>
+      <div class="value" id="res-motion-support">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Vibration Haptic API</div>
+      <div class="value" id="res-vibration-support">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Online Status Indicator</div>
+      <div class="value" id="res-online-status" style="color: #10b981;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Clipboard API Access</div>
+      <div class="value" id="res-clipboard-support">-</div>
+    </div>
+  </div>
+
+  <!-- MEDIA & HARDWARE CAPABILITIES -->
+  <div class="section-subheading">🎥 Media &amp; Audio-Video Telemetry</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Connected Camera Devices</div>
+      <div class="value" id="res-camera-count">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Connected Microphone Devices</div>
+      <div class="value" id="res-mic-count">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Speech Synthesis Engine</div>
+      <div class="value" id="res-speech-support">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Media Capabilities API</div>
+      <div class="value" id="res-media-caps">-</div>
+    </div>
+  </div>
+
+  <!-- BROWSER & SYSTEM META -->
+  <div class="section-subheading">🌐 Browser System Fingerprint &amp; Storage</div>
+  <div class="grid-stats">
+    <div class="stat-card">
+      <div class="label">Operating System &amp; Architecture</div>
+      <div class="value" id="res-os-platform">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Primary Language</div>
+      <div class="value" id="res-language">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Timezone</div>
+      <div class="value" id="res-timezone">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Cookies &amp; Storage APIs</div>
+      <div class="value" id="res-cookies">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">IndexedDB Database API</div>
+      <div class="value" id="res-indexeddb-support">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Service Workers Support</div>
+      <div class="value" id="res-serviceworker-support">-</div>
+    </div>
+  </div>
+
+  <div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+function playClickSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
+    osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.05);
+
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) {}
+}
+
+function cyrb53(str, seed = 0) {
+  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0, ch; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+}
+
+function getCanvasFingerprint() {
+  try {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 200;
+    canvas.height = 50;
+    ctx.textBaseline = "top";
+    ctx.font = "14px 'Arial'";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = "#f60";
+    ctx.fillRect(125, 1, 62, 20);
+    ctx.fillStyle = "#069";
+    ctx.fillText("ACSN-Privacy-Check,😃", 2, 15);
+    ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+    ctx.fillText("ACSN-Privacy-Check,😃", 4, 17);
+    const dataDataURL = canvas.toDataURL();
+    return "0x" + cyrb53(dataDataURL);
+  } catch (e) {
+    return "Canvas Blocked / Protected";
+  }
+}
+
+async function getAudioFingerprint() {
+  try {
+    const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OfflineCtx) return "Unsupported";
+    
+    const context = new OfflineCtx(1, 44100, 44100);
+    const oscillator = context.createOscillator();
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(10000, context.currentTime);
+
+    const compressor = context.createDynamicsCompressor();
+    compressor.threshold.setValueAtTime(-50, context.currentTime);
+    compressor.knee.setValueAtTime(40, context.currentTime);
+    compressor.ratio.setValueAtTime(12, context.currentTime);
+    compressor.reduction.setValueAtTime(-20, context.currentTime);
+    compressor.attack.setValueAtTime(0, context.currentTime);
+    compressor.release.setValueAtTime(0.25, context.currentTime);
+
+    oscillator.connect(compressor);
+    compressor.connect(context.destination);
+    oscillator.start(0);
+
+    const buffer = await context.startRendering();
+    const data = buffer.getChannelData(0);
+    let sum = 0;
+    for (let i = 0; i < data.length; i += 100) {
+      sum += Math.abs(data[i]);
+    }
+    return "0x" + cyrb53(sum.toString());
+  } catch (e) {
+    return "Audio API Restricted";
+  }
+}
+
+function scanWebRTCLeak() {
+  return new Promise((resolve) => {
+    try {
+      const rtc = new RTCPeerConnection({ iceServers: [] });
+      rtc.createDataChannel('');
+      rtc.createOffer().then(offer => rtc.setLocalDescription(offer)).catch(() => resolve("Protected ✅ (No IP Leak)"));
+      
+      rtc.onicecandidate = (event) => {
+        if (event && event.candidate && event.candidate.candidate) {
+          const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){8})/;
+          const match = event.candidate.candidate.match(ipRegex);
+          if (match && !match[1].startsWith('127.')) {
+            resolve(`⚠️ Leaked: ${match[1]}`);
+            rtc.close();
+            return;
+          }
+        }
+      };
+      setTimeout(() => resolve("Protected ✅ (No IP Leak)"), 400);
+    } catch (e) {
+      resolve("WebRTC Blocked ✅");
+    }
+  });
+}
+
+async function detectIncognito() {
+  try {
+    if ('storage' in navigator && 'estimate' in navigator.storage) {
+      const { quota } = await navigator.storage.estimate();
+      if (quota < 1200000000) return "Private / Incognito Mode 🕶️";
+    }
+  } catch (e) {}
+  return "Standard Mode 🌐";
+}
+
+async function getMediaDeviceCounts() {
+  let cams = 0, mics = 0;
+  try {
+    if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      devices.forEach(d => {
+        if (d.kind === 'videoinput') cams++;
+        if (d.kind === 'audioinput') mics++;
+      });
+      return { cams: `${cams} Camera(s) Detected`, mics: `${mics} Microphone(s) Detected` };
+    }
+  } catch (e) {}
+  return { cams: "Enumeration Restricted", mics: "Enumeration Restricted" };
+}
+
+async function executeProAudit() {
+  playClickSound();
+
+  const resultsContainer = document.getElementById('results-container');
+  resultsContainer.style.display = 'block';
+
+  // 1. Cryptographic Fingerprints
+  let canvasHash = "Canvas Blocked", audioHash = "Audio Restricted", webrtcStatus = "Protected ✅", incognitoStatus = "Standard Mode 🌐";
+  try { canvasHash = getCanvasFingerprint(); } catch(e){}
+  try { audioHash = await getAudioFingerprint(); } catch(e){}
+  try { webrtcStatus = await scanWebRTCLeak(); } catch(e){}
+  try { incognitoStatus = await detectIncognito(); } catch(e){}
+
+  document.getElementById('res-canvas-hash').innerText = canvasHash;
+  document.getElementById('res-audio-hash').innerText = audioHash;
+  document.getElementById('res-webrtc-ip').innerText = webrtcStatus;
+  document.getElementById('res-incognito-status').innerText = incognitoStatus;
+
+  // Risk Score
+  let riskScore = 20;
+  if (!canvasHash.includes("Blocked") && !canvasHash.includes("Protected")) riskScore += 30;
+  if (!audioHash.includes("Restricted") && !audioHash.includes("Unsupported")) riskScore += 25;
+  if (webrtcStatus.includes("Leaked")) riskScore += 25;
+
+  const scoreCardContainer = document.getElementById('score-card-container');
+  const resRiskScore = document.getElementById('res-risk-score');
+  const resRiskDesc = document.getElementById('res-risk-desc');
+
+  if (riskScore >= 75) {
+    scoreCardContainer.className = "score-card score-high";
+    resRiskScore.innerText = `HIGHLY TRACKABLE (${riskScore}%) 🔴`;
+    resRiskDesc.innerText = "Your browser exposes a unique Canvas & AudioContext fingerprint allowing cross-site tracking without cookies.";
+  } else if (riskScore >= 40) {
+    scoreCardContainer.className = "score-card score-warn";
+    resRiskScore.innerText = `MODERATE TRACKABILITY (${riskScore}%) 🟠`;
+    resRiskDesc.innerText = "Some hardware metrics or fingerprint signatures are exposed, making partial tracking possible.";
+  } else {
+    scoreCardContainer.className = "score-card score-safe";
+    resRiskScore.innerText = `PROTECTED / LOW RISK (${riskScore}%) 🟢`;
+    resRiskDesc.innerText = "Great privacy protections active! Your browser resists advanced fingerprinting techniques.";
+  }
+
+  // 2. Battery Telemetry
+  try {
+    if ('getBattery' in navigator) {
+      const battery = await navigator.getBattery();
+      const level = Math.round(battery.level * 100);
+      const isCharging = battery.charging ? "Plugged In (Charging) ⚡" : "Discharging 🔋";
+      document.getElementById('res-battery-level').innerText = `${level}%`;
+      document.getElementById('res-battery-charging').innerText = isCharging;
+    } else {
+      document.getElementById('res-battery-level').innerText = "API Unsupported";
+      document.getElementById('res-battery-charging').innerText = "N/A";
+    }
+  } catch (e) {
+    document.getElementById('res-battery-level').innerText = "Access Restricted";
+    document.getElementById('res-battery-charging').innerText = "N/A";
+  }
+
+  // 3. CPU & RAM
+  try {
+    document.getElementById('res-cpu-cores').innerText = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} Cores` : "Undisclosed";
+    document.getElementById('res-device-ram').innerText = navigator.deviceMemory ? `~${navigator.deviceMemory} GB` : "Undisclosed";
+  } catch(e){}
+
+  // 4. Network Intelligence
+  try {
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection) {
+      document.getElementById('res-net-type').innerText = connection.effectiveType ? connection.effectiveType.toUpperCase() : "Unknown";
+      document.getElementById('res-net-speed').innerText = connection.downlink ? `${connection.downlink} Mbps` : "N/A";
+      document.getElementById('res-net-rtt').innerText = connection.rtt ? `${connection.rtt} ms` : "N/A";
+      document.getElementById('res-net-saver').innerText = connection.saveData ? "Enabled 🟢" : "Disabled 🔴";
+    } else {
+      document.getElementById('res-net-type').innerText = "Standard Web Connection";
+      document.getElementById('res-net-speed').innerText = "N/A";
+      document.getElementById('res-net-rtt').innerText = "N/A";
+      document.getElementById('res-net-saver').innerText = "N/A";
+    }
+  } catch(e){}
+
+  // 5. Display & Screen
+  try {
+    document.getElementById('res-screen-res').innerText = `${window.screen.width} x ${window.screen.height} px`;
+    document.getElementById('res-color-depth').innerText = `${window.screen.colorDepth}-bit (${window.devicePixelRatio || 1}x Ratio)`;
+    document.getElementById('res-touch-points').innerText = navigator.maxTouchPoints ? `${navigator.maxTouchPoints} Touch Points` : "No Touch Screen";
+    document.getElementById('res-screen-orientation').innerText = (window.screen.orientation && window.screen.orientation.type) ? window.screen.orientation.type : "Landscape / Standard";
+  } catch(e){}
+
+  // 6. GPU Engine Check
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (gl) {
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      if (debugInfo) {
+        const gpu = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+        document.getElementById('res-gpu-render').innerText = gpu || "Standard GPU";
+      } else {
+        document.getElementById('res-gpu-render').innerText = "Generic WebGL Renderer";
+      }
+    } else {
+      document.getElementById('res-gpu-render').innerText = "WebGL Unsupported";
+    }
+  } catch (e) {
+    document.getElementById('res-gpu-render').innerText = "GPU Info Blocked";
+  }
+
+  // 7. Hardware Sensors & Device APIs
+  try {
+    document.getElementById('res-bluetooth-support').innerText = ('bluetooth' in navigator) ? "Supported 🔵" : "Unsupported ❌";
+    document.getElementById('res-usb-support').innerText = ('usb' in navigator) ? "Supported 🔌" : "Unsupported ❌";
+    document.getElementById('res-hid-support').innerText = ('hid' in navigator) ? "Active 🎮" : "Unsupported ❌";
+    document.getElementById('res-midi-support').innerText = ('requestMIDIAccess' in navigator) ? "Active 🎹" : "Unsupported ❌";
+    document.getElementById('res-motion-support').innerText = ('DeviceMotionEvent' in window || 'DeviceOrientationEvent' in window) ? "Detected 📱" : "Unsupported ❌";
+    document.getElementById('res-vibration-support').innerText = ('vibrate' in navigator) ? "Active 📳" : "Unsupported ❌";
+    document.getElementById('res-online-status').innerText = navigator.onLine ? "Online 🟢" : "Offline 🔴";
+    document.getElementById('res-clipboard-support').innerText = (navigator.clipboard) ? "Active 📋" : "Restricted ❌";
+  } catch(e){}
+
+  // 8. Media Telemetry
+  try {
+    const mediaCount = await getMediaDeviceCounts();
+    document.getElementById('res-camera-count').innerText = mediaCount.cams;
+    document.getElementById('res-mic-count').innerText = mediaCount.mics;
+    document.getElementById('res-speech-support').innerText = ('speechSynthesis' in window) ? "Active 🗣️" : "Unsupported ❌";
+    document.getElementById('res-media-caps').innerText = ('mediaCapabilities' in navigator) ? "Active 📽️" : "Unsupported ❌";
+  } catch(e){}
+
+  // 9. System & Storage Meta
+  try {
+    document.getElementById('res-os-platform').innerText = navigator.platform || "Unknown OS";
+    document.getElementById('res-language').innerText = navigator.language || "N/A";
+    document.getElementById('res-timezone').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone || "N/A";
+    document.getElementById('res-cookies').innerText = navigator.cookieEnabled ? "Enabled 🟢 (LocalStorage Active)" : "Disabled 🔴";
+    document.getElementById('res-indexeddb-support').innerText = ('indexedDB' in window) ? "Active 💾" : "Unsupported ❌";
+    document.getElementById('res-serviceworker-support').innerText = ('serviceWorker' in navigator) ? "Active ⚙️" : "Unsupported ❌";
+  } catch(e){}
+
+  showToast("✅ Pro Forensic Audit Complete!");
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
+}
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Advanced JWT Token Decoder | ACSN Tools</title>
+
+<meta name="description" content="Decode and parse JSON Web Tokens (JWT) with claim analysis, security warnings, human timestamps, and age detection safely client-side.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 900px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+.status-bar {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 12px;
+background-color: #0f172a;
+padding: 10px 14px;
+border-radius: 6px;
+border: 1px solid #1e293b;
+}
+.detect-badge {
+background-color: #1e1b4b;
+color: #818cf8;
+border: 1px solid #4338ca;
+padding: 4px 10px;
+border-radius: 4px;
+font-size: 0.85rem;
+font-weight: 600;
+}
+.live-tag {
+color: #10b981;
+font-size: 0.85rem;
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.live-dot {
+width: 8px;
+height: 8px;
+background-color: #10b981;
+border-radius: 50%;
+box-shadow: 0 0 8px #10b981;
+}
+.input-wrapper {
+position: relative;
+margin: 15px 0 25px 0;
+}
+.eval-input {
+width: 100%;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 0.95rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+transition: all 0.2s;
+}
+.eval-input:focus {
+outline: none;
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+.eval-input.input-error {
+border-color: #ef4444 !important;
+box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+textarea.eval-input {
+resize: vertical;
+min-height: 120px;
+}
+.error-msg {
+color: #ef4444;
+font-size: 0.85rem;
+font-weight: 600;
+margin-top: 6px;
+display: none;
+}
+
+/* RESULTS & BUTTONS CONTAINER (HIDDEN INITIALLY) */
+#results-container {
+display: none;
+animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.warning-box {
+background-color: rgba(239, 68, 68, 0.1);
+border: 1px solid #ef4444;
+border-radius: 8px;
+padding: 12px 16px;
+margin-bottom: 20px;
+color: #fca5a5;
+font-size: 0.88rem;
+line-height: 1.5;
+display: none;
+}
+.warning-box h4 {
+margin: 0 0 6px 0;
+color: #ef4444;
+font-size: 0.95rem;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+.claims-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 12px;
+margin-bottom: 20px;
+}
+.claim-card {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+padding: 12px;
+border-radius: 8px;
+}
+.claim-label {
+font-size: 0.75rem;
+color: #00ffcc;
+text-transform: uppercase;
+font-weight: 700;
+margin-bottom: 4px;
+}
+.claim-value {
+font-size: 0.9rem;
+color: #ffffff;
+font-family: monospace;
+word-break: break-all;
+}
+.claim-sub {
+font-size: 0.78rem;
+color: #9ca3af;
+margin-top: 2px;
+}
+.result-card {
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+margin-bottom: 15px;
+}
+.result-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 8px;
+flex-wrap: wrap;
+gap: 8px;
+}
+.result-title {
+color: #00ffcc;
+font-weight: 700;
+font-size: 0.95rem;
+}
+.btn-group-mini {
+display: flex;
+gap: 6px;
+}
+.mini-btn {
+background-color: #1e293b;
+color: #9ca3af;
+border: 1px solid #334155;
+padding: 4px 10px;
+font-size: 0.8rem;
+border-radius: 4px;
+cursor: pointer;
+transition: all 0.2s;
+}
+.mini-btn:hover {
+color: #ffffff;
+border-color: #2563eb;
+}
+.result-value {
+color: #38bdf8;
+font-family: monospace;
+font-size: 0.92rem;
+white-space: pre-wrap;
+word-break: break-all;
+background-color: #0b0f19;
+padding: 14px;
+border-radius: 6px;
+border: 1px solid #1e293b;
+min-height: 40px;
+line-height: 1.5;
+}
+
+/* BOTTOM ACTION BUTTONS AT THE VERY END BEFORE FOOTER */
+.button-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-top: 25px;
+margin-bottom: 10px;
+padding-top: 15px;
+border-top: 1px dashed #1e293b;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 12px;
+font-size: 0.95rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-1px);
+}
+.btn-clear {
+background-color: #334155;
+}
+.btn-clear:hover {
+background-color: #475569;
+}
+
+/* SLEEK TOAST NOTIFICATION */
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px 18px;
+background-color: rgba(16, 185, 129, 0.15);
+border: 1px solid #10b981;
+border-radius: 8px;
+display: none;
+text-align: center;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+animation: toastIn 0.2s ease;
+}
+
+@keyframes toastIn {
+from { opacity: 0; transform: scale(0.95); }
+to { opacity: 1; transform: scale(1); }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Advanced JWT Decoder</h1>
+
+<p>
+Decode and parse JSON Web Token headers, payloads, claim analysis, algorithm security, and expiration entirely in your browser.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="JWT Decoder Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>Paste a standard 3-part JWT token (e.g., <code>eyJhbGci...</code>) below. The tool will automatically validate its structure, decode standard claims (<strong>iss, sub, aud, exp, nbf, iat</strong>), compute <strong>Token Age &amp; Lifetime</strong>, and flag <strong>Security Warnings</strong>.</p>
+</div>
+
+<div class="status-bar">
+<span id="detect-badge" class="detect-badge">🔍 Status: Waiting for Token...</span>
+<!-- UPDATED FOR PRECISION -->
+<span class="live-tag"><span class="live-dot"></span> Processed locally in your browser</span>
+</div>
+
+<!-- INPUT AREA -->
+<div class="input-wrapper">
+<textarea id="main-input" class="eval-input" placeholder="Paste encoded JWT token here (eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)" oninput="handleLiveInput()"></textarea>
+<div id="error-msg" class="error-msg">⚠️ Invalid JWT token format. Standard JWTs must contain exactly 3 dot-separated parts.</div>
+</div>
+
+<!-- RESULTS AREA & BOTTOM BUTTONS (HIDDEN UNTIL INPUT IS GIVEN) -->
+<div id="results-container">
+
+  <!-- Security & Claims Warnings Banner -->
+  <div id="warning-box" class="warning-box">
+    <h4>⚠️ Security &amp; Claim Warnings:</h4>
+    <ul id="warning-list" style="margin: 0; padding-left: 20px;"></ul>
+  </div>
+
+  <!-- Standard Claims & Timestamps Summary Grid -->
+  <div class="claims-grid">
+    <div class="claim-card">
+      <div class="claim-label">Algorithm (alg)</div>
+      <div class="claim-value" id="c-alg">-</div>
+      <div class="claim-sub" id="c-alg-sub">Algorithm Type</div>
+    </div>
+    <div class="claim-card">
+      <div class="claim-label">Issuer (iss)</div>
+      <div class="claim-value" id="c-iss">-</div>
+      <div class="claim-sub">Token Origin</div>
+    </div>
+    <div class="claim-card">
+      <div class="claim-label">Subject (sub)</div>
+      <div class="claim-value" id="c-sub">-</div>
+      <div class="claim-sub">User/Entity ID</div>
+    </div>
+    <div class="claim-card">
+      <div class="claim-label">Audience (aud)</div>
+      <div class="claim-value" id="c-aud">-</div>
+      <div class="claim-sub">Target Recipient</div>
+    </div>
+    <div class="claim-card">
+      <div class="claim-label">Issued At (iat)</div>
+      <div class="claim-value" id="c-iat">-</div>
+      <div class="claim-sub" id="c-iat-sub">-</div>
+    </div>
+    <div class="claim-card">
+      <div class="claim-label">Not Before (nbf)</div>
+      <div class="claim-value" id="c-nbf">-</div>
+      <div class="claim-sub" id="c-nbf-sub">-</div>
+    </div>
+    <div class="claim-card">
+      <div class="claim-label">Expiration (exp)</div>
+      <div class="claim-value" id="c-exp">-</div>
+      <div class="claim-sub" id="c-exp-sub">-</div>
+    </div>
+    <div class="claim-card">
+      <div class="claim-label">Token Lifetime</div>
+      <div class="claim-value" id="c-lifetime">-</div>
+      <div class="claim-sub">Total Duration (exp - iat)</div>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <div class="result-card">
+    <div class="result-header">
+      <span class="result-title">HEADER: Algorithm &amp; Token Type</span>
+      <div class="btn-group-mini">
+        <button type="button" class="mini-btn" onclick="copyOutput('res-header')">📋 Copy</button>
+        <button type="button" class="mini-btn" onclick="downloadOutput('res-header', 'jwt-header.json')">💾 Download</button>
+      </div>
+    </div>
+    <div class="result-value" id="res-header">-</div>
+  </div>
+
+  <!-- Payload Section -->
+  <div class="result-card">
+    <div class="result-header">
+      <span class="result-title">PAYLOAD: Data &amp; Claims</span>
+      <div class="btn-group-mini">
+        <button type="button" class="mini-btn" onclick="copyOutput('res-payload')">📋 Copy</button>
+        <button type="button" class="mini-btn" onclick="downloadOutput('res-payload', 'jwt-payload.json')">💾 Download</button>
+      </div>
+    </div>
+    <div class="result-value" id="res-payload">-</div>
+  </div>
+
+  <!-- BOTTOM ACTION BUTTONS (PLACED AT THE BOTTOM BEFORE FOOTER) -->
+  <div class="button-grid">
+    <button type="button" class="action-btn btn-clear" onclick="clearAll()">🧹 Clear Input</button>
+    <button type="button" class="action-btn" onclick="copyAllFormatted()">📋 Copy Full Report</button>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+// Audio feedback for Copy and Clear actions
+function playSound(type = 'copy') {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+
+    if (type === 'copy') {
+      osc.frequency.setValueAtTime(659.25, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(987.77, audioCtx.currentTime + 0.06);
+
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.12);
+    } else {
+      osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.05);
+
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    }
+  } catch (e) {}
+}
+
+function base64UrlDecode(str) {
+  let output = str.replace(/-/g, '+').replace(/_/g, '/');
+  switch (output.length % 4) {
+    case 0: break;
+    case 2: output += '=='; break;
+    case 3: output += '='; break;
+    default: throw new Error('Invalid Base64URL string length');
+  }
+  try {
+    return decodeURIComponent(atob(output).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+  } catch (e) {
+    return atob(output);
+  }
+}
+
+function formatDuration(seconds) {
+  if (isNaN(seconds) || seconds < 0) return "N/A";
+  const d = Math.floor(seconds / (3600*24));
+  const h = Math.floor((seconds % (3600*24)) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+
+  const parts = [];
+  if (d > 0) parts.push(d + "d");
+  if (h > 0) parts.push(h + "h");
+  if (m > 0) parts.push(m + "m");
+  if (s > 0 || parts.length === 0) parts.push(s + "s");
+  return parts.join(" ");
+}
+
+function getTimeAgo(timestampSec) {
+  const diff = Math.floor(Date.now() / 1000) - timestampSec;
+  if (diff < 0) return "In " + formatDuration(Math.abs(diff));
+  return formatDuration(diff) + " ago";
+}
+
+function handleLiveInput() {
+  const inputEl = document.getElementById('main-input');
+  const val = inputEl.value.trim();
+  const badge = document.getElementById('detect-badge');
+  const resultsContainer = document.getElementById('results-container');
+
+  clearErrorState();
+
+  if (!val) {
+    badge.innerText = "🔍 Status: Waiting for Token...";
+    resultsContainer.style.display = 'none';
+    resetResults();
+    return;
+  }
+
+  resultsContainer.style.display = 'block';
+
+  // FIX 1: STRICT 3-PART VALIDATION FOR STANDARD JWT
+  const parts = val.split('.');
+  if (parts.length !== 3) {
+    showError("Invalid JWT structure. Standard JWTs must contain exactly 3 dot-separated parts (Header.Payload.Signature).");
+    badge.innerText = "❌ Status: Invalid JWT Format";
+    resetResults();
+    return;
+  }
+
+  try {
+    const headerStr = base64UrlDecode(parts[0]);
+    const payloadStr = base64UrlDecode(parts[1]);
+
+    const headerObj = JSON.parse(headerStr);
+    const payloadObj = JSON.parse(payloadStr);
+
+    document.getElementById('res-header').innerText = JSON.stringify(headerObj, null, 2);
+    document.getElementById('res-payload').innerText = JSON.stringify(payloadObj, null, 2);
+
+    badge.innerText = "⚡ Status: JWT Decoded Successfully";
+
+    analyzeClaimsAndWarnings(headerObj, payloadObj);
+
+  } catch (err) {
+    showError("Failed to decode Base64URL or parse JSON: " + err.message);
+    badge.innerText = "❌ Status: Parsing Failed";
+    resetResults();
+  }
+}
+
+function analyzeClaimsAndWarnings(header, payload) {
+  const warnings = [];
+  const nowSec = Math.floor(Date.now() / 1000);
+  const knownAlgs = ['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512', 'PS256', 'PS384', 'PS512', 'EDDSA'];
+
+  // FIX 3: ENHANCED ALGORITHM WARNINGS
+  const alg = header.alg;
+  if (!alg) {
+    document.getElementById('c-alg').innerText = "Missing";
+    document.getElementById('c-alg-sub').innerText = "Unspecified";
+    warnings.push("CRITICAL SECURITY RISK: The 'alg' header parameter is missing! The token algorithm is unspecified.");
+  } else {
+    document.getElementById('c-alg').innerText = alg;
+    document.getElementById('c-alg-sub').innerText = alg === 'HS256' ? 'Symmetric Secret' : (alg === 'RS256' ? 'Asymmetric RSA' : 'Algorithm Name');
+
+    if (alg.toLowerCase() === 'none') {
+      warnings.push("HIGH SECURITY RISK: Algorithm is set to 'none'. This token is unsigned and vulnerable to tampering!");
+    } else if (!knownAlgs.includes(alg.toUpperCase())) {
+      warnings.push(`ALGORITHM WARNING: Token uses an unrecognized or non-standard algorithm '${alg}'. Ensure your server explicitly validates it.`);
+    }
+  }
+
+  document.getElementById('c-iss').innerText = payload.iss || 'Not Set';
+  document.getElementById('c-sub').innerText = payload.sub || 'Not Set';
+  document.getElementById('c-aud').innerText = Array.isArray(payload.aud) ? payload.aud.join(', ') : (payload.aud || 'Not Set');
+
+  // FIX 2: STRICT NUMERIC VALIDATION FOR iat, nbf, exp
+  if (typeof payload.iat === 'number' && !isNaN(payload.iat)) {
+    const iatDate = new Date(payload.iat * 1000);
+    document.getElementById('c-iat').innerText = iatDate.toLocaleTimeString() + " (" + iatDate.toLocaleDateString() + ")";
+    document.getElementById('c-iat-sub').innerText = "Age: " + getTimeAgo(payload.iat);
+  } else {
+    document.getElementById('c-iat').innerText = "Not Set";
+    document.getElementById('c-iat-sub').innerText = "Missing or non-numeric 'iat' claim";
+  }
+
+  if (typeof payload.nbf === 'number' && !isNaN(payload.nbf)) {
+    const nbfDate = new Date(payload.nbf * 1000);
+    document.getElementById('c-nbf').innerText = nbfDate.toLocaleTimeString() + " (" + nbfDate.toLocaleDateString() + ")";
+    if (nowSec < payload.nbf) {
+      document.getElementById('c-nbf-sub').innerText = "⚠️ Not valid yet";
+      warnings.push(`Token is NOT VALID YET! Effective in ${formatDuration(payload.nbf - nowSec)}.`);
+    } else {
+      document.getElementById('c-nbf-sub').innerText = "Active";
+    }
+  } else {
+    document.getElementById('c-nbf').innerText = "Not Set";
+    document.getElementById('c-nbf-sub').innerText = "Immediate validity";
+  }
+
+  if (typeof payload.exp === 'number' && !isNaN(payload.exp)) {
+    const expDate = new Date(payload.exp * 1000);
+    document.getElementById('c-exp').innerText = expDate.toLocaleTimeString() + " (" + expDate.toLocaleDateString() + ")";
+    if (nowSec > payload.exp) {
+      document.getElementById('c-exp-sub').innerText = "❌ Expired";
+      warnings.push(`Token is EXPIRED! Expired ${formatDuration(nowSec - payload.exp)} ago.`);
+    } else {
+      document.getElementById('c-exp-sub').innerText = "Expires in: " + formatDuration(payload.exp - nowSec);
+    }
+  } else {
+    document.getElementById('c-exp').innerText = "Never (No Exp)";
+    document.getElementById('c-exp-sub').innerText = "Infinite lifetime";
+    warnings.push("CLAIM WARNING: Token lacks a valid numeric 'exp' (Expiration) claim. It will never expire!");
+  }
+
+  if (typeof payload.exp === 'number' && typeof payload.iat === 'number' && !isNaN(payload.exp) && !isNaN(payload.iat)) {
+    const lifetime = payload.exp - payload.iat;
+    document.getElementById('c-lifetime').innerText = formatDuration(lifetime);
+  } else {
+    document.getElementById('c-lifetime').innerText = "Indefinite";
+  }
+
+  const warningBox = document.getElementById('warning-box');
+  const warningList = document.getElementById('warning-list');
+  warningList.innerHTML = '';
+
+  if (warnings.length > 0) {
+    warnings.forEach(w => {
+      const li = document.createElement('li');
+      li.innerText = w;
+      warningList.appendChild(li);
+    });
+    warningBox.style.display = 'block';
+  } else {
+    warningBox.style.display = 'none';
+  }
+}
+
+function showError(msg) {
+  const inputEl = document.getElementById('main-input');
+  const errorMsg = document.getElementById('error-msg');
+
+  inputEl.classList.add('input-error');
+  errorMsg.innerText = "⚠️ " + msg;
+  errorMsg.style.display = 'block';
+}
+
+function clearErrorState() {
+  const inputEl = document.getElementById('main-input');
+  const errorMsg = document.getElementById('error-msg');
+
+  inputEl.classList.remove('input-error');
+  errorMsg.style.display = 'none';
+}
+
+function resetResults() {
+  document.getElementById('res-header').innerText = "-";
+  document.getElementById('res-payload').innerText = "-";
+  document.getElementById('warning-box').style.display = 'none';
+}
+
+function downloadOutput(elementId, filename) {
+  playSound('copy');
+  const text = document.getElementById(elementId).innerText;
+  if (!text || text === '-') {
+    alert("Nothing to download!");
+    return;
+  }
+
+  const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("💾 Download started: " + filename);
+}
+
+function copyOutput(id) {
+  playSound('copy');
+  const text = document.getElementById(id).innerText;
+  if (!text || text === '-') return;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("📋 Copied to clipboard successfully!");
+  }).catch(() => {
+    alert("Clipboard permission denied.");
+  });
+}
+
+function copyAllFormatted() {
+  playSound('copy');
+  const header = document.getElementById('res-header').innerText;
+  const payload = document.getElementById('res-payload').innerText;
+  const alg = document.getElementById('c-alg').innerText;
+  const iss = document.getElementById('c-iss').innerText;
+  const sub = document.getElementById('c-sub').innerText;
+  const aud = document.getElementById('c-aud').innerText;
+
+  if (header === '-') return;
+
+  const fullReport = `--- ACSN JWT Full Analysis Report ---\nAlgorithm: ${alg}\nIssuer: ${iss}\nSubject: ${sub}\nAudience: ${aud}\n\n[HEADER]\n${header}\n\n[PAYLOAD]\n${payload}`;
+  navigator.clipboard.writeText(fullReport).then(() => {
+    showToast("📋 Full JWT report copied to clipboard successfully!");
+  }).catch(() => {
+    alert("Clipboard permission denied.");
+  });
+}
+
+function clearAll() {
+  playSound('clear');
+  document.getElementById('main-input').value = "";
+  document.getElementById('detect-badge').innerText = "🔍 Status: Waiting for Token...";
+  document.getElementById('results-container').style.display = 'none';
+  clearErrorState();
+  resetResults();
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2500);
+}
+</script>
+
+</body>
+
+</html>

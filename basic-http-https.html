@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Basic HTTPS SSL Checker | ACSN Tools</title>
+
+<meta name="description" content="Check whether a website supports HTTPS, responds over port 443, and provides a basic SSL connection status.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 900px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+.input-wrapper {
+position: relative;
+margin: 20px 0 15px 0;
+}
+.eval-input {
+width: 100%;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 1rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+transition: border-color 0.2s;
+}
+.eval-input:focus {
+outline: none;
+border-color: #2563eb;
+}
+.button-group-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 12px;
+margin-bottom: 20px;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+}
+.btn-test {
+background-color: #0891b2;
+}
+.btn-test:hover {
+background-color: #0e7490;
+}
+.btn-copy {
+background-color: #059669;
+margin-top: 15px;
+width: 100%;
+font-size: 1rem;
+}
+.btn-copy:hover {
+background-color: #047857;
+}
+.btn-copy.copied {
+background-color: #10b981;
+}
+
+/* Category Sections */
+.category-title {
+color: #38bdf8;
+font-size: 1.1rem;
+font-weight: 700;
+border-bottom: 1px solid #1f2937;
+padding-bottom: 8px;
+margin: 25px 0 15px 0;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.grid-stats {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 15px;
+}
+.stat-card {
+background-color: #0f172a;
+padding: 14px 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+}
+.stat-card .label {
+color: #9ca3af;
+font-size: 0.82rem;
+margin-bottom: 6px;
+}
+.stat-card .value {
+color: #ffffff;
+font-size: 1rem;
+font-weight: 700;
+word-break: break-all;
+}
+
+/* Status Badge Card */
+.status-card {
+padding: 18px;
+border-radius: 10px;
+text-align: center;
+margin-bottom: 20px;
+font-weight: 700;
+font-size: 1.25rem;
+border: 1px solid transparent;
+}
+.status-active {
+background-color: rgba(16, 185, 129, 0.15);
+border-color: #10b981;
+color: #10b981;
+}
+.status-failed {
+background-color: rgba(239, 68, 68, 0.15);
+border-color: #ef4444;
+color: #ef4444;
+}
+
+/* Findings Box */
+.findings-list {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+border-radius: 8px;
+padding: 15px 20px;
+margin-top: 15px;
+}
+.findings-list h3 {
+color: #38bdf8;
+font-size: 1rem;
+margin-top: 0;
+margin-bottom: 10px;
+}
+.findings-list ul {
+margin: 0;
+padding-left: 20px;
+color: #cbd5e1;
+font-size: 0.92rem;
+}
+.findings-list li {
+margin-bottom: 6px;
+line-height: 1.5;
+}
+
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 12px;
+padding: 10px 14px;
+background-color: rgba(16, 185, 129, 0.1);
+border: 1px solid rgba(16, 185, 129, 0.3);
+border-radius: 6px;
+display: none;
+text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Basic HTTPS SSL Checker</h1>
+
+<p>
+Check whether a website supports HTTPS, responds over port 443, and provides a basic SSL connection status.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="SSL Checker Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>Enter any domain or website URL (e.g., <code>example.com</code> or <code>https://google.com</code>) in the box below and click <strong>"🔒 Check HTTPS Status"</strong>. The analyzer will perform a basic probe to verify Port 443 availability and HTTPS connectivity.</p>
+</div>
+
+<div class="input-wrapper">
+<input type="text" id="domainInput" class="eval-input" placeholder="Enter domain or URL (e.g., wikipedia.org)..." autocomplete="off">
+</div>
+
+<div class="button-group-grid">
+<button class="action-btn" onclick="checkHTTPS()">
+🔒 Check HTTPS Status
+</button>
+<button class="action-btn btn-test" onclick="loadSampleDomain()">
+🧪 Test Sample Domain
+</button>
+</div>
+
+<div id="result-section" style="display: none;">
+
+<!-- Status Badge -->
+<div id="statusBadge" class="status-card status-active">
+🛡️ HTTPS Status: Checking...
+</div>
+
+<!-- Category 1: HTTPS Protocol Metrics -->
+<div class="category-title">🌐 HTTPS Connection Metrics</div>
+<div class="grid-stats">
+  <div class="stat-card">
+    <div class="label">Target Domain</div>
+    <div class="value" id="resDomain" style="color: #00ffcc;">-</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">HTTPS Support Status</div>
+    <div class="value" id="resHttpsStatus">-</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Port 443 Response</div>
+    <div class="value" id="resPortStatus">-</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Basic Security Status</div>
+    <div class="value" id="resSecurityStatus">-</div>
+  </div>
+</div>
+
+<!-- Category 2: Endpoint Details -->
+<div class="category-title">📊 Endpoint & Response Details</div>
+<div class="grid-stats">
+  <div class="stat-card">
+    <div class="label">Target Endpoint URL</div>
+    <div class="value" id="resEndpoint" style="font-size: 0.85rem; font-family: monospace;">-</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Probe Connection Type</div>
+    <div class="value" id="resProbeType">Direct HTTPS Probe</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Estimated Response Time</div>
+    <div class="value" id="resLatency">-</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">Default Secure Port</div>
+    <div class="value">443</div>
+  </div>
+</div>
+
+<!-- Category 3: Key Observations -->
+<div class="findings-list">
+  <h3>📋 Connection Observations:</h3>
+  <ul id="resFindingsList">
+    <li>No observations recorded.</li>
+  </ul>
+</div>
+
+<button id="copy-btn" class="action-btn btn-copy" onclick="copyReport()">📋 Copy HTTPS Status Report</button>
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let lastReportSummary = "";
+
+function playClickSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
+    osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.05);
+
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) {
+    // Unsupported audio fallback
+  }
+}
+
+async function checkHTTPS() {
+  playClickSound();
+  hideToast();
+
+  let rawInput = document.getElementById("domainInput").value.trim();
+  if (!rawInput) {
+    alert("Please enter a valid domain or URL to check!");
+    return;
+  }
+
+  let cleanDomain = rawInput.replace(/^https?:\/\//i, '').split('/')[0].split('?')[0].split(':')[0];
+  if (!cleanDomain) {
+    alert("Invalid domain name. Please enter a valid hostname.");
+    return;
+  }
+
+  document.getElementById("result-section").style.display = "block";
+
+  document.getElementById("resDomain").innerText = cleanDomain;
+  document.getElementById("resHttpsStatus").innerText = "Probing...";
+  document.getElementById("resPortStatus").innerText = "Testing...";
+  document.getElementById("resSecurityStatus").innerText = "Checking...";
+  document.getElementById("resEndpoint").innerText = `https://${cleanDomain}`;
+  document.getElementById("resLatency").innerText = "Measuring...";
+
+  const targetHttpsUrl = `https://${cleanDomain}`;
+  const startTime = performance.now();
+
+  let isHttpsActive = false;
+  let latencyMs = 0;
+  let observations = [];
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    await fetch(targetHttpsUrl, { mode: 'no-cors', signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    const endTime = performance.now();
+    latencyMs = Math.round(endTime - startTime);
+    isHttpsActive = true;
+
+    observations.push("✔ HTTPS Connection Successful: The target host responded over Port 443.");
+    observations.push("✔ Connection Active: Basic encrypted web traffic handshake completed.");
+    if (latencyMs < 500) {
+      observations.push(`✔ Fast Handshake Time: ${latencyMs} ms.`);
+    } else {
+      observations.push(`ℹ️ Latency Response Time: ${latencyMs} ms.`);
+    }
+
+  } catch (err) {
+    isHttpsActive = false;
+    if (err.name === 'AbortError') {
+      observations.push("❌ Connection Timeout: Port 443 took too long to respond (> 6000ms).");
+    } else {
+      observations.push("❌ HTTPS Connection Failed: Host may lack HTTPS support or Port 443 is blocked.");
+    }
+  }
+
+  const statusBadge = document.getElementById("statusBadge");
+  statusBadge.className = "status-card";
+
+  const securityStatusText = isHttpsActive ? "HTTPS Active" : "HTTPS Inactive";
+
+  if (isHttpsActive) {
+    statusBadge.classList.add("status-active");
+    statusBadge.innerText = "🔒 HTTPS Status: Active & Responding";
+  } else {
+    statusBadge.classList.add("status-failed");
+    statusBadge.innerText = "🚨 HTTPS Status: Connection Failed";
+  }
+
+  document.getElementById("resHttpsStatus").innerText = isHttpsActive ? "Supported" : "Failed / Unavailable";
+  document.getElementById("resHttpsStatus").style.color = isHttpsActive ? "#10b981" : "#ef4444";
+
+  document.getElementById("resPortStatus").innerText = isHttpsActive ? "Open (443)" : "Closed / Blocked";
+  document.getElementById("resPortStatus").style.color = isHttpsActive ? "#10b981" : "#ef4444";
+
+  document.getElementById("resSecurityStatus").innerText = securityStatusText;
+  document.getElementById("resSecurityStatus").style.color = isHttpsActive ? "#10b981" : "#ef4444";
+
+  document.getElementById("resLatency").innerText = isHttpsActive ? `${latencyMs} ms` : "N/A";
+
+  const listEl = document.getElementById("resFindingsList");
+  listEl.innerHTML = "";
+  observations.forEach(obs => {
+    const li = document.createElement("li");
+    li.innerText = obs;
+    listEl.appendChild(li);
+  });
+
+  lastReportSummary = `Basic HTTPS SSL Status Report:\n` +
+    `Domain: ${cleanDomain}\n` +
+    `Endpoint: ${targetHttpsUrl}\n` +
+    `HTTPS Status: ${isHttpsActive ? "Active" : "Failed"}\n` +
+    `Port 443: ${isHttpsActive ? "Open" : "Closed"}\n` +
+    `Basic Security Status: ${securityStatusText}\n` +
+    `Latency: ${isHttpsActive ? latencyMs + " ms" : "N/A"}\n` +
+    `Observations:\n` + observations.map(item => `- ${item}`).join("\n");
+}
+
+function loadSampleDomain() {
+  playClickSound();
+  document.getElementById("domainInput").value = "wikipedia.org";
+  checkHTTPS();
+}
+
+function copyReport() {
+  playClickSound();
+  if (!lastReportSummary) return;
+
+  const copyBtn = document.getElementById("copy-btn");
+  navigator.clipboard.writeText(lastReportSummary).then(() => {
+    copyBtn.innerHTML = "✅ Copied HTTPS Report!";
+    copyBtn.classList.add("copied");
+    showToast("✅ Basic HTTPS Status Report copied to clipboard!");
+
+    setTimeout(() => {
+      copyBtn.innerHTML = "📋 Copy HTTPS Status Report";
+      copyBtn.classList.remove("copied");
+    }, 3000);
+  }).catch(() => {
+    showToast("❌ Failed to copy report.");
+  });
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+}
+
+function hideToast() {
+  const toast = document.getElementById('toast-msg');
+  toast.style.display = 'none';
+}
+</script>
+
+</body>
+
+</html>

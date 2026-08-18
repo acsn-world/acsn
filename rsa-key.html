@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RSA Key Generator & Encryption Tool | ACSN Tools</title>
+
+<meta name="description" content="Generate RSA public/private key pairs, encrypt secret text, and decrypt messages locally in your browser.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 900px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* TAB SELECTION NAVIGATION */
+.tab-selection {
+display: flex;
+gap: 10px;
+margin-bottom: 25px;
+flex-wrap: wrap;
+}
+.tab-btn {
+flex: 1;
+min-width: 220px;
+padding: 14px;
+background-color: #0f172a;
+color: #9ca3af;
+border: 2px solid #334155;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 700;
+font-size: 0.92rem;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.tab-btn:hover {
+border-color: #2563eb;
+color: #ffffff;
+}
+.tab-btn.active {
+background-color: #2563eb;
+color: #ffffff;
+border-color: #3b82f6;
+box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+}
+
+/* INPUTS STYLING */
+.input-wrapper {
+position: relative;
+margin: 15px 0;
+}
+.input-label {
+color: #00ffcc;
+font-size: 0.88rem;
+font-weight: 600;
+margin-bottom: 6px;
+display: block;
+}
+.limit-hint {
+color: #f59e0b;
+font-size: 0.82rem;
+font-weight: 500;
+margin-bottom: 8px;
+display: block;
+}
+.eval-select, .eval-input {
+width: 100%;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 0.95rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+outline: none;
+transition: all 0.2s;
+}
+.eval-select:focus, .eval-input:focus {
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+textarea.eval-input {
+resize: vertical;
+min-height: 100px;
+}
+
+/* BUTTON GRID */
+.button-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-top: 20px;
+margin-bottom: 20px;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px;
+font-size: 0.95rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-1px);
+}
+.btn-clear {
+background-color: #334155;
+}
+.btn-clear:hover {
+background-color: #475569;
+}
+
+/* RESULTS PANEL */
+#results-container {
+display: none;
+margin-top: 25px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.result-card {
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+margin-bottom: 20px;
+}
+.result-header {
+margin-bottom: 10px;
+}
+.result-title {
+color: #00ffcc;
+font-weight: 700;
+font-size: 0.95rem;
+}
+
+.result-value {
+color: #38bdf8;
+font-family: monospace;
+font-size: 0.85rem;
+white-space: pre-wrap;
+word-break: break-all;
+background-color: #0b0f19;
+padding: 14px;
+border-radius: 6px;
+border: 1px solid #1e293b;
+min-height: 60px;
+line-height: 1.5;
+margin-bottom: 12px;
+}
+
+.action-btn-group-below {
+display: flex;
+gap: 10px;
+justify-content: flex-end;
+flex-wrap: wrap;
+}
+.mini-btn {
+background-color: #1e293b;
+color: #9ca3af;
+border: 1px solid #334155;
+padding: 8px 16px;
+font-size: 0.88rem;
+font-weight: 600;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.2s;
+display: inline-flex;
+align-items: center;
+gap: 6px;
+}
+.mini-btn:hover {
+color: #ffffff;
+border-color: #2563eb;
+background-color: #2563eb;
+}
+
+.loader {
+display: none;
+text-align: center;
+padding: 20px;
+color: #38bdf8;
+font-weight: 600;
+}
+
+.error-box {
+background-color: rgba(239, 68, 68, 0.15);
+border: 1px solid #ef4444;
+color: #fca5a5;
+padding: 12px 16px;
+border-radius: 8px;
+margin-top: 15px;
+display: none;
+font-size: 0.9rem;
+line-height: 1.5;
+}
+
+/* TOAST NOTIFICATION */
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 15px;
+padding: 12px 18px;
+background-color: rgba(16, 185, 129, 0.15);
+border: 1px solid #10b981;
+border-radius: 8px;
+display: none;
+text-align: center;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>RSA Key Generator &amp; Encryption Tool</h1>
+
+<p>
+Generate RSA public/private key pairs, encrypt secret text, and decrypt messages locally in your browser.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="RSA Generator Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p id="mode-instruction-text">Choose a mode below: <strong>Generate Keys</strong> to create RSA key pair, <strong>Encrypt Text</strong> using a Public Key to lock messages, or <strong>Decrypt Text</strong> using a Private Key to unlock messages.</p>
+</div>
+
+<!-- MODE SELECTION TABS -->
+<div class="tab-selection">
+  <button type="button" class="tab-btn active" id="tab-gen" onclick="switchMode('generate')">🔑 Generate Key Pair</button>
+  <button type="button" class="tab-btn" id="tab-enc" onclick="switchMode('encrypt')">🔒 Encrypt Text (Lock)</button>
+  <button type="button" class="tab-btn" id="tab-dec" onclick="switchMode('decrypt')">🔓 Decrypt Text (Unlock)</button>
+</div>
+
+<!-- SECTION 1: KEY GENERATOR FORM -->
+<div id="section-generate">
+  <div class="input-wrapper">
+    <label class="input-label">🔑 Select RSA Key Size:</label>
+    <select id="key-size-select" class="eval-select">
+      <option value="2048">2048-bit (Standard - Max 190 chars encryption)</option>
+      <option value="4096">4096-bit (High Security - Max 446 chars encryption)</option>
+    </select>
+  </div>
+  <div class="button-grid">
+    <button type="button" class="action-btn" onclick="generateRsaKeyPair()">⚡ Generate Key Pair Now</button>
+    <button type="button" class="action-btn btn-clear" onclick="clearAll(false)">🧹 Clear Output</button>
+  </div>
+</div>
+
+<!-- SECTION 2: ENCRYPT FORM -->
+<div id="section-encrypt" style="display: none;">
+  <div class="input-wrapper">
+    <label class="input-label">📝 Message to Lock / Encrypt:</label>
+    <!-- DYNAMIC CAPACITY NOTICE ON SCREEN -->
+    <span class="limit-hint">⚠️ RSA Text Capacity: ~190 chars for 2048-bit key | ~446 chars for 4096-bit key</span>
+    <textarea id="enc-text-input" class="eval-input" placeholder="Type plain text message here..."></textarea>
+  </div>
+  <div class="input-wrapper">
+    <label class="input-label">🔓 Public Key (Paste Recipient's Public Key):</label>
+    <textarea id="enc-key-input" class="eval-input" placeholder="Paste -----BEGIN PUBLIC KEY----- here..."></textarea>
+  </div>
+  <div class="button-grid">
+    <button type="button" class="action-btn" onclick="encryptMessage()">🔒 Lock / Encrypt Message</button>
+    <button type="button" class="action-btn btn-clear" onclick="clearAll(false)">🧹 Clear Inputs</button>
+  </div>
+</div>
+
+<!-- SECTION 3: DECRYPT FORM -->
+<div id="section-decrypt" style="display: none;">
+  <div class="input-wrapper">
+    <label class="input-label">🔐 Locked Ciphertext (Base64 Message):</label>
+    <textarea id="dec-text-input" class="eval-input" placeholder="Paste encrypted Base64 message string here..."></textarea>
+  </div>
+  <div class="input-wrapper">
+    <label class="input-label">🔑 Private Key (Paste Your Private Key):</label>
+    <textarea id="dec-key-input" class="eval-input" placeholder="Paste -----BEGIN PRIVATE KEY----- here..."></textarea>
+  </div>
+  <div class="button-grid">
+    <button type="button" class="action-btn" onclick="decryptMessage()">🔓 Unlock / Decrypt Message</button>
+    <button type="button" class="action-btn btn-clear" onclick="clearAll(false)">🧹 Clear Inputs</button>
+  </div>
+</div>
+
+<!-- LOADER -->
+<div id="loader" class="loader">
+  ⚙️ Processing RSA Cryptographic Algorithm... Please wait.
+</div>
+
+<!-- ERROR BOX -->
+<div id="error-box" class="error-box"></div>
+
+<!-- RESULTS AREA -->
+<div id="results-container">
+  
+  <!-- GENERATE KEYS RESULT -->
+  <div id="res-keys-wrapper">
+    <!-- Public Key Card (Shareable) -->
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-title">🔓 Public Key (Share this with others to receive locked messages)</span>
+      </div>
+      <div class="result-value" id="res-public-key">-</div>
+      <div class="action-btn-group-below">
+        <button type="button" class="mini-btn" onclick="copyOutput('res-public-key')">📋 Copy Public Key</button>
+        <button type="button" class="mini-btn" onclick="downloadOutput('res-public-key', 'public_key')">💾 Download</button>
+        <button type="button" class="mini-btn" onclick="shareOutput('res-public-key', 'RSA Public Key')">🔗 Share</button>
+      </div>
+    </div>
+
+    <!-- Private Key Card (Must stay Secret - NO Share button) -->
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-title">🔐 Private Key (Keep this Secret! Used to unlock received messages)</span>
+      </div>
+      <div class="result-value" id="res-private-key">-</div>
+      <div class="action-btn-group-below">
+        <button type="button" class="mini-btn" onclick="copyOutput('res-private-key')">📋 Copy Private Key</button>
+        <button type="button" class="mini-btn" onclick="downloadOutput('res-private-key', 'private_key')">💾 Download</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENCRYPT / DECRYPT RESULT -->
+  <div id="res-single-wrapper" style="display: none;">
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-title" id="res-single-title">🔒 Result</span>
+      </div>
+      <div class="result-value" id="res-single-value">-</div>
+      <div class="action-btn-group-below" id="res-single-buttons">
+        <!-- Buttons injected dynamically based on Encrypt or Decrypt mode -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let currentMode = 'generate';
+
+function playSound(type = 'action') {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    if (type === 'action') {
+      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+    } else {
+      osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.05);
+    }
+
+    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.08);
+  } catch (e) {}
+}
+
+// SWITCH MODE WITH SILENT AUTO-CLEAR
+function switchMode(mode) {
+  if (currentMode === mode) return;
+  
+  playSound('action');
+  currentMode = mode;
+  clearAll(true);
+
+  document.getElementById('tab-gen').classList.remove('active');
+  document.getElementById('tab-enc').classList.remove('active');
+  document.getElementById('tab-dec').classList.remove('active');
+
+  document.getElementById('section-generate').style.display = 'none';
+  document.getElementById('section-encrypt').style.display = 'none';
+  document.getElementById('section-decrypt').style.display = 'none';
+
+  if (mode === 'generate') {
+    document.getElementById('tab-gen').classList.add('active');
+    document.getElementById('section-generate').style.display = 'block';
+  } else if (mode === 'encrypt') {
+    document.getElementById('tab-enc').classList.add('active');
+    document.getElementById('section-encrypt').style.display = 'block';
+  } else if (mode === 'decrypt') {
+    document.getElementById('tab-dec').classList.add('active');
+    document.getElementById('section-decrypt').style.display = 'block';
+  }
+}
+
+// CONVERT BUFFER TO PEM & BASE64 UTILITIES
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}
+
+function base64ToArrayBuffer(base64) {
+  const binary = window.atob(base64.trim());
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+function formatAsPem(base64Str, keyType) {
+  const pemHeader = keyType === 'PUBLIC' ? '-----BEGIN PUBLIC KEY-----' : '-----BEGIN PRIVATE KEY-----';
+  const pemFooter = keyType === 'PUBLIC' ? '-----END PUBLIC KEY-----' : '-----END PRIVATE KEY-----';
+  const wrapped = base64Str.match(/.{1,64}/g).join('\n');
+  return `${pemHeader}\n${wrapped}\n${pemFooter}`;
+}
+
+function cleanPemKey(pemStr) {
+  return pemStr
+    .replace(/-----BEGIN [A-Z ]+-----/g, '')
+    .replace(/-----END [A-Z ]+-----/g, '')
+    .replace(/\s+/g, '');
+}
+
+// 1. GENERATE RSA KEY PAIR
+async function generateRsaKeyPair() {
+  playSound('action');
+  
+  const keySize = parseInt(document.getElementById('key-size-select').value, 10);
+  const loader = document.getElementById('loader');
+  const resultsContainer = document.getElementById('results-container');
+  
+  hideError();
+  resultsContainer.style.display = 'none';
+  loader.style.display = 'block';
+
+  try {
+    const keyPair = await window.crypto.subtle.generateKey(
+      {
+        name: "RSA-OAEP",
+        modulusLength: keySize,
+        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+        hash: "SHA-256",
+      },
+      true,
+      ["encrypt", "decrypt"]
+    );
+
+    const exportedPublic = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
+    const publicKeyPem = formatAsPem(arrayBufferToBase64(exportedPublic), 'PUBLIC');
+
+    const exportedPrivate = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+    const privateKeyPem = formatAsPem(arrayBufferToBase64(exportedPrivate), 'PRIVATE');
+
+    document.getElementById('res-public-key').innerText = publicKeyPem;
+    document.getElementById('res-private-key').innerText = privateKeyPem;
+
+    document.getElementById('res-keys-wrapper').style.display = 'block';
+    document.getElementById('res-single-wrapper').style.display = 'none';
+
+    loader.style.display = 'none';
+    resultsContainer.style.display = 'block';
+    showToast(`✅ ${keySize}-bit RSA Key Pair generated!`);
+
+  } catch (err) {
+    loader.style.display = 'none';
+    showError("❌ Failed to generate RSA key pair: " + err.message);
+  }
+}
+
+// 2. ENCRYPT MESSAGE USING PUBLIC KEY (DYNAMIC ENGINE HANDLED)
+async function encryptMessage() {
+  playSound('action');
+  
+  const text = document.getElementById('enc-text-input').value.trim();
+  const rawKey = document.getElementById('enc-key-input').value.trim();
+  const loader = document.getElementById('loader');
+  const resultsContainer = document.getElementById('results-container');
+
+  hideError();
+
+  if (!text) {
+    showError("⚠️ Please enter a message to encrypt.");
+    return;
+  }
+  if (!rawKey) {
+    showError("⚠️ Please paste a valid Public Key.");
+    return;
+  }
+
+  loader.style.display = 'block';
+  resultsContainer.style.display = 'none';
+
+  try {
+    const cleanKeyBase64 = cleanPemKey(rawKey);
+    const keyBuffer = base64ToArrayBuffer(cleanKeyBase64);
+
+    const publicKey = await window.crypto.subtle.importKey(
+      "spki",
+      keyBuffer,
+      { name: "RSA-OAEP", hash: "SHA-256" },
+      false,
+      ["encrypt"]
+    );
+
+    const encoder = new TextEncoder();
+    const encodedText = encoder.encode(text);
+
+    // Native SubtleCrypto dynamically validates capacity for both 2048-bit & 4096-bit keys
+    const encryptedBuffer = await window.crypto.subtle.encrypt(
+      { name: "RSA-OAEP" },
+      publicKey,
+      encodedText
+    );
+
+    const encryptedBase64 = arrayBufferToBase64(encryptedBuffer);
+
+    document.getElementById('res-single-title').innerText = "🔒 Encrypted Ciphertext (Base64 Message)";
+    document.getElementById('res-single-value').innerText = encryptedBase64;
+
+    document.getElementById('res-single-buttons').innerHTML = `
+      <button type="button" class="mini-btn" onclick="copyOutput('res-single-value')">📋 Copy Ciphertext</button>
+      <button type="button" class="mini-btn" onclick="downloadOutput('res-single-value', 'encrypted_message')">💾 Download</button>
+      <button type="button" class="mini-btn" onclick="shareOutput('res-single-value', 'Encrypted Message')">🔗 Share</button>
+    `;
+
+    document.getElementById('res-keys-wrapper').style.display = 'none';
+    document.getElementById('res-single-wrapper').style.display = 'block';
+
+    loader.style.display = 'none';
+    resultsContainer.style.display = 'block';
+    showToast("✅ Message locked / encrypted successfully!");
+
+  } catch (err) {
+    loader.style.display = 'none';
+    showError("❌ Encryption failed! Text is too long for the selected RSA Key size or the Public Key is invalid.");
+  }
+}
+
+// 3. DECRYPT MESSAGE USING PRIVATE KEY
+async function decryptMessage() {
+  playSound('action');
+
+  const cipherTextBase64 = document.getElementById('dec-text-input').value.trim();
+  const rawKey = document.getElementById('dec-key-input').value.trim();
+  const loader = document.getElementById('loader');
+  const resultsContainer = document.getElementById('results-container');
+
+  hideError();
+
+  if (!cipherTextBase64) {
+    showError("⚠️ Please paste the encrypted Base64 message.");
+    return;
+  }
+  if (!rawKey) {
+    showError("⚠️ Please paste your Private Key.");
+    return;
+  }
+
+  loader.style.display = 'block';
+  resultsContainer.style.display = 'none';
+
+  try {
+    const cleanKeyBase64 = cleanPemKey(rawKey);
+    const keyBuffer = base64ToArrayBuffer(cleanKeyBase64);
+
+    const privateKey = await window.crypto.subtle.importKey(
+      "pkcs8",
+      keyBuffer,
+      { name: "RSA-OAEP", hash: "SHA-256" },
+      false,
+      ["decrypt"]
+    );
+
+    const encryptedBuffer = base64ToArrayBuffer(cipherTextBase64);
+
+    const decryptedBuffer = await window.crypto.subtle.decrypt(
+      { name: "RSA-OAEP" },
+      privateKey,
+      encryptedBuffer
+    );
+
+    const decoder = new TextDecoder();
+    const decryptedText = decoder.decode(decryptedBuffer);
+
+    document.getElementById('res-single-title').innerText = "🔓 Decrypted Plaintext Message";
+    document.getElementById('res-single-value').innerText = decryptedText;
+
+    document.getElementById('res-single-buttons').innerHTML = `
+      <button type="button" class="mini-btn" onclick="copyOutput('res-single-value')">📋 Copy Plaintext</button>
+      <button type="button" class="mini-btn" onclick="downloadOutput('res-single-value', 'decrypted_message')">💾 Download</button>
+    `;
+
+    document.getElementById('res-keys-wrapper').style.display = 'none';
+    document.getElementById('res-single-wrapper').style.display = 'block';
+
+    loader.style.display = 'none';
+    resultsContainer.style.display = 'block';
+    showToast("✅ Message unlocked / decrypted successfully!");
+
+  } catch (err) {
+    loader.style.display = 'none';
+    showError("❌ Decryption failed! Invalid ciphertext or wrong Private Key.");
+  }
+}
+
+function showError(msg) {
+  const errorBox = document.getElementById('error-box');
+  errorBox.innerText = msg;
+  errorBox.style.display = 'block';
+}
+
+function hideError() {
+  const errorBox = document.getElementById('error-box');
+  errorBox.style.display = 'none';
+}
+
+// COPY WITH TOAST ALERT
+function copyOutput(elementId) {
+  playSound('action');
+  const text = document.getElementById(elementId).innerText;
+  if (!text || text === '-') return;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast("📋 Copied to clipboard successfully!");
+  }).catch(() => {
+    showToast("❌ Clipboard permission denied.");
+  });
+}
+
+// DOWNLOAD ONLY AFTER USER TYPES NAME AND CLICKS "OK"
+function downloadOutput(elementId, defaultPrefix) {
+  playSound('action');
+  const text = document.getElementById(elementId).innerText;
+  if (!text || text === '-') return;
+
+  const defaultName = `${defaultPrefix}.txt`;
+  const userFileName = prompt("Enter file name to save:", defaultName);
+
+  if (userFileName === null) return;
+
+  let finalFileName = userFileName.trim();
+  if (!finalFileName) finalFileName = defaultName;
+  if (!finalFileName.includes('.')) finalFileName += '.txt';
+
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = finalFileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("💾 Saved as: " + finalFileName);
+}
+
+// SHARE FUNCTION WITH UNSUPPORTED NOTICE
+async function shareOutput(elementId, titleName) {
+  playSound('action');
+  const text = document.getElementById(elementId).innerText;
+  if (!text || text === '-') return;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: titleName + " - ACSN Tools",
+        text: text
+      });
+      showToast("🔗 Shared successfully!");
+    } catch (err) {
+      // User cancelled share action
+    }
+  } else {
+    showToast("⚠️ Sharing is not supported on this browser.");
+  }
+}
+
+function clearAll(isSilent = false) {
+  if (!isSilent) playSound('clear');
+
+  document.getElementById('enc-text-input').value = "";
+  document.getElementById('enc-key-input').value = "";
+  document.getElementById('dec-text-input').value = "";
+  document.getElementById('dec-key-input').value = "";
+
+  document.getElementById('results-container').style.display = 'none';
+  document.getElementById('res-public-key').innerText = "-";
+  document.getElementById('res-private-key').innerText = "-";
+  document.getElementById('res-single-value').innerText = "-";
+
+  hideError();
+  if (!isSilent) showToast("🧹 Fields cleared!");
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast-msg');
+  toast.innerText = message;
+  toast.style.display = 'block';
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 2500);
+}
+</script>
+
+</body>
+
+</html>

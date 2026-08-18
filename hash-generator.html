@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Advanced Hash Generator & Checker | ACSN Tools</title>
+
+<meta name="description" content="Generate cryptographic hashes for text or files (MD5, SHA-1, SHA-256, SHA-512), detect hash types, and verify integrity safely.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 800px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+.mode-instruction {
+text-align: center;
+color: #f59e0b;
+background-color: rgba(245, 158, 11, 0.1);
+border: 1px dashed #f59e0b;
+padding: 12px;
+border-radius: 8px;
+font-weight: 600;
+margin-bottom: 15px;
+}
+.tab-selection {
+display: flex;
+gap: 12px;
+margin-bottom: 20px;
+}
+.tab-btn {
+flex: 1;
+padding: 14px;
+background-color: #0f172a;
+color: #9ca3af;
+border: 2px solid #334155;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 700;
+font-size: 1rem;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.tab-btn:hover {
+border-color: #2563eb;
+color: #ffffff;
+}
+.tab-btn.active {
+background-color: #2563eb;
+color: #ffffff;
+border-color: #3b82f6;
+box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+}
+.active-mode-badge {
+background-color: #1e1b4b;
+color: #818cf8;
+border: 1px solid #4338ca;
+padding: 8px 14px;
+border-radius: 6px;
+font-size: 0.9rem;
+font-weight: 600;
+margin-bottom: 15px;
+display: inline-block;
+}
+.input-wrapper {
+position: relative;
+margin: 15px 0;
+}
+.eval-input {
+width: 100%;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #ffffff;
+padding: 14px 18px;
+font-size: 1rem;
+font-family: monospace;
+border-radius: 8px;
+box-sizing: border-box;
+transition: border-color 0.2s;
+}
+.eval-input:focus {
+outline: none;
+border-color: #2563eb;
+}
+textarea.eval-input {
+resize: vertical;
+min-height: 100px;
+}
+.file-drop-area {
+border: 2px dashed #334155;
+border-radius: 8px;
+padding: 30px;
+text-align: center;
+background-color: #0f172a;
+cursor: pointer;
+transition: border-color 0.2s;
+}
+.file-drop-area:hover {
+border-color: #00ffcc;
+}
+.file-drop-area p {
+color: #9ca3af;
+margin: 8px 0 0 0;
+font-size: 0.95rem;
+}
+.button-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-bottom: 20px;
+}
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+}
+.btn-clear {
+background-color: #334155;
+}
+.btn-clear:hover {
+background-color: #475569;
+}
+.btn-case {
+background-color: #0891b2;
+}
+.btn-case:hover {
+background-color: #0e7490;
+}
+.btn-copy-all {
+background-color: #059669;
+width: 100%;
+margin-top: 15px;
+}
+.btn-copy-all:hover {
+background-color: #047857;
+}
+.btn-copy-all.copied {
+background-color: #10b981;
+}
+.hash-card {
+background-color: #0f172a;
+padding: 16px;
+border-radius: 8px;
+border: 1px solid #1e293b;
+margin-bottom: 12px;
+}
+.hash-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 8px;
+}
+.hash-title-wrapper {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.hash-title {
+color: #00ffcc;
+font-weight: 700;
+font-size: 0.95rem;
+}
+.hash-badge {
+background-color: #1e293b;
+color: #9ca3af;
+font-size: 0.75rem;
+padding: 2px 6px;
+border-radius: 4px;
+border: 1px solid #334155;
+}
+.mini-copy-btn {
+background-color: #1e293b;
+color: #9ca3af;
+border: 1px solid #334155;
+padding: 4px 10px;
+font-size: 0.8rem;
+border-radius: 4px;
+cursor: pointer;
+transition: all 0.2s;
+}
+.mini-copy-btn:hover {
+color: #ffffff;
+border-color: #2563eb;
+}
+.hash-value {
+color: #ffffff;
+font-family: monospace;
+font-size: 0.9rem;
+word-break: break-all;
+background-color: #0b0f19;
+padding: 10px;
+border-radius: 6px;
+border: 1px solid #1e293b;
+}
+.checker-section {
+margin-top: 35px;
+border-top: 1px solid #1f2937;
+padding-top: 25px;
+}
+.checker-title {
+color: #ffffff;
+font-size: 1.1rem;
+margin-bottom: 15px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.detected-tag {
+color: #00ffcc;
+font-size: 0.88rem;
+font-weight: 600;
+margin-bottom: 12px;
+display: block;
+padding: 8px 12px;
+background-color: #0f172a;
+border-radius: 6px;
+border: 1px dashed #334155;
+}
+.btn-detect {
+background-color: #6366f1;
+width: 100%;
+margin-bottom: 10px;
+}
+.btn-detect:hover {
+background-color: #4f46e5;
+}
+.verify-btn {
+background-color: #0891b2;
+width: 100%;
+margin-bottom: 15px;
+}
+.verify-btn:hover {
+background-color: #0e7490;
+}
+.match-status {
+padding: 12px;
+border-radius: 6px;
+font-weight: 600;
+text-align: center;
+display: none;
+margin-top: 10px;
+}
+.match-success {
+background-color: rgba(16, 185, 129, 0.15);
+color: #10b981;
+border: 1px solid #10b981;
+}
+.match-error {
+background-color: rgba(239, 68, 68, 0.15);
+color: #ef4444;
+border: 1px solid #ef4444;
+}
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 12px;
+padding: 10px 14px;
+background-color: rgba(16, 185, 129, 0.1);
+border: 1px solid rgba(16, 185, 129, 0.3);
+border-radius: 6px;
+display: none;
+text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Advanced Hash Generator &amp; Checker</h1>
+
+<p>
+Generate cryptographic hashes for text or files (MD5, SHA-1, SHA-256, SHA-512), detect hash types, and verify integrity safely.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="Hash Generator Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>First select a mode below (<strong>Text Mode</strong> or <strong>File Mode</strong>). Once selected, enter your input and click <strong>"⚡ Generate Hashes"</strong> to produce your hash results.</p>
+</div>
+
+<!-- Notice message before mode selection -->
+<div id="no-mode-msg" class="mode-instruction">
+👇 Please select a Mode below (Text or File) to activate the Generator!
+</div>
+
+<!-- Mode Buttons Selection -->
+<div class="tab-selection">
+<button class="tab-btn" id="tab-text" onclick="switchTab('text')">📝 Text Mode</button>
+<button class="tab-btn" id="tab-file" onclick="switchTab('file')">📁 File Mode</button>
+</div>
+
+<!-- Active Mode Badge Indicator -->
+<div id="active-mode-indicator" style="display: none;">
+<span class="active-mode-badge" id="active-mode-badge">⚡ Currently Active Mode: Text Mode</span>
+</div>
+
+<!-- Dynamic Container (Shows only after clicking a mode) -->
+<div id="generator-body" style="display: none;">
+
+<!-- Text Input Area -->
+<div id="mode-text-container" class="input-wrapper" style="display: none;">
+<textarea id="text-input" class="eval-input" placeholder="Enter text or password here to generate hashes..."></textarea>
+</div>
+
+<!-- File Input Area -->
+<div id="mode-file-container" class="input-wrapper" style="display: none;">
+<div class="file-drop-area" onclick="document.getElementById('file-input').click()">
+<span style="font-size: 2.5rem;">📁</span>
+<p id="file-label">Click here to select a file from your device</p>
+<input type="file" id="file-input" style="display: none;" onchange="handleFileSelect(this)">
+</div>
+</div>
+
+<div class="button-grid">
+<button class="action-btn" onclick="generateHashes()">⚡ Generate Hashes</button>
+<button class="action-btn btn-clear" onclick="clearAll()">🧹 Clear All</button>
+</div>
+
+<!-- Results Area -->
+<div id="results-area" style="display: none;">
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+<span style="color: #9ca3af; font-size: 0.9rem;">Format:</span>
+<button class="mini-copy-btn btn-case" onclick="toggleCase()">🔠 Toggle Upper/Lower Case</button>
+</div>
+
+<div class="hash-card">
+<div class="hash-header">
+<div class="hash-title-wrapper">
+<span class="hash-title">MD5 Hash</span>
+<span class="hash-badge">128-bit / 32 Chars</span>
+</div>
+<button class="mini-copy-btn" onclick="copySingle('res-md5')">📋 Copy</button>
+</div>
+<div class="hash-value" id="res-md5">-</div>
+</div>
+
+<div class="hash-card">
+<div class="hash-header">
+<div class="hash-title-wrapper">
+<span class="hash-title">SHA-1 Hash</span>
+<span class="hash-badge">160-bit / 40 Chars</span>
+</div>
+<button class="mini-copy-btn" onclick="copySingle('res-sha1')">📋 Copy</button>
+</div>
+<div class="hash-value" id="res-sha1">-</div>
+</div>
+
+<div class="hash-card">
+<div class="hash-header">
+<div class="hash-title-wrapper">
+<span class="hash-title">SHA-256 Hash (Recommended)</span>
+<span class="hash-badge">256-bit / 64 Chars</span>
+</div>
+<button class="mini-copy-btn" onclick="copySingle('res-sha256')">📋 Copy</button>
+</div>
+<div class="hash-value" id="res-sha256">-</div>
+</div>
+
+<div class="hash-card">
+<div class="hash-header">
+<div class="hash-title-wrapper">
+<span class="hash-title">SHA-512 Hash</span>
+<span class="hash-badge">512-bit / 128 Chars</span>
+</div>
+<button class="mini-copy-btn" onclick="copySingle('res-sha512')">📋 Copy</button>
+</div>
+<div class="hash-value" id="res-sha512">-</div>
+</div>
+
+<button id="copy-all-btn" class="action-btn btn-copy-all" onclick="copyAllHashes()">
+📋 Copy All Hashes &amp; Details
+</button>
+
+</div>
+
+</div> <!-- End generator-body -->
+
+<!-- Hash Verifier Section -->
+<div class="checker-section">
+<h3 class="checker-title">🔍 Hash Matcher &amp; Format Detector</h3>
+<div class="input-wrapper">
+<input type="text" id="verify-input" class="eval-input" placeholder="Paste any hash string here...">
+</div>
+
+<div class="button-grid" style="margin-bottom: 10px;">
+<button class="action-btn btn-detect" onclick="detectHashFormatManual()">
+💡 Detect Hash Format
+</button>
+<button class="action-btn verify-btn" style="margin-bottom: 0;" onclick="verifyHash()">
+🎯 Compare &amp; Verify
+</button>
+</div>
+
+<span id="detected-tag" class="detected-tag" style="display: none;"></span>
+<div id="match-status" class="match-status"></div>
+</div>
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<!-- Crypto-JS Library for standard Hashing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="../../home/script.js"></script>
+
+<script>
+let lastGeneratedData = {};
+let currentMode = null; // शुरुआत में कोई मोड सेलेक्ट नहीं रहेगा
+let selectedFile = null;
+let isUpperCase = false;
+
+// 🔊 साइबर बीप आवाज
+function playCyberSound() {
+try {
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const osc1 = audioCtx.createOscillator();
+const osc2 = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+
+osc1.type = 'sawtooth';
+osc2.type = 'sine';
+
+osc1.frequency.setValueAtTime(520, audioCtx.currentTime);
+osc1.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+
+osc2.frequency.setValueAtTime(1040, audioCtx.currentTime);
+osc2.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.08);
+
+gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+osc1.connect(gain);
+osc2.connect(gain);
+gain.connect(audioCtx.destination);
+
+osc1.start();
+osc2.start();
+osc1.stop(audioCtx.currentTime + 0.08);
+osc2.stop(audioCtx.currentTime + 0.08);
+} catch (e) {}
+}
+
+function switchTab(mode) {
+playCyberSound();
+currentMode = mode;
+
+// सुचना बॉक्स छुपाएं और मुख्य बॉडी दिखाएं
+document.getElementById('no-mode-msg').style.display = 'none';
+document.getElementById('generator-body').style.display = 'block';
+document.getElementById('active-mode-indicator').style.display = 'block';
+
+const badge = document.getElementById('active-mode-badge');
+const btnText = document.getElementById('tab-text');
+const btnFile = document.getElementById('tab-file');
+
+if (mode === 'text') {
+btnText.classList.add('active');
+btnFile.classList.remove('active');
+
+document.getElementById('mode-text-container').style.display = 'block';
+document.getElementById('mode-file-container').style.display = 'none';
+
+badge.innerText = "⚡ Currently Active Mode: 📝 Text Mode";
+} else if (mode === 'file') {
+btnFile.classList.add('active');
+btnText.classList.remove('active');
+
+document.getElementById('mode-file-container').style.display = 'block';
+document.getElementById('mode-text-container').style.display = 'none';
+
+badge.innerText = "⚡ Currently Active Mode: 📁 File Mode";
+}
+}
+
+function handleFileSelect(input) {
+if (input.files && input.files[0]) {
+selectedFile = input.files[0];
+document.getElementById('file-label').innerText = `Selected File: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(2)} KB)`;
+}
+}
+
+function generateHashes() {
+playCyberSound();
+
+if (!currentMode) {
+alert("Please select a mode (Text Mode or File Mode) first!");
+return;
+}
+
+if (currentMode === 'text') {
+const text = document.getElementById('text-input').value;
+if (!text.trim()) {
+alert("Please enter some text or password first!");
+return;
+}
+const md5 = CryptoJS.MD5(text).toString();
+const sha1 = CryptoJS.SHA1(text).toString();
+const sha256 = CryptoJS.SHA256(text).toString();
+const sha512 = CryptoJS.SHA512(text).toString();
+
+renderResults(text, md5, sha1, sha256, sha512);
+} else {
+if (!selectedFile) {
+alert("Please select a file first!");
+return;
+}
+const reader = new FileReader();
+reader.onload = function (e) {
+const arrayBuffer = e.target.result;
+const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+
+const md5 = CryptoJS.MD5(wordArray).toString();
+const sha1 = CryptoJS.SHA1(wordArray).toString();
+const sha256 = CryptoJS.SHA256(wordArray).toString();
+const sha512 = CryptoJS.SHA512(wordArray).toString();
+
+renderResults(`File: ${selectedFile.name}`, md5, sha1, sha256, sha512);
+};
+reader.readAsArrayBuffer(selectedFile);
+}
+}
+
+function renderResults(source, md5, sha1, sha256, sha512) {
+lastGeneratedData = { source, md5, sha1, sha256, sha512 };
+isUpperCase = false;
+updateHashDisplay();
+
+document.getElementById('results-area').style.display = 'block';
+document.getElementById('match-status').style.display = 'none';
+
+const copyAllBtn = document.getElementById('copy-all-btn');
+copyAllBtn.innerHTML = "📋 Copy All Hashes &amp; Details";
+copyAllBtn.classList.remove('copied');
+}
+
+function updateHashDisplay() {
+if (!lastGeneratedData.md5) return;
+const fmt = (str) => isUpperCase ? str.toUpperCase() : str.toLowerCase();
+
+document.getElementById('res-md5').innerText = fmt(lastGeneratedData.md5);
+document.getElementById('res-sha1').innerText = fmt(lastGeneratedData.sha1);
+document.getElementById('res-sha256').innerText = fmt(lastGeneratedData.sha256);
+document.getElementById('res-sha512').innerText = fmt(lastGeneratedData.sha512);
+}
+
+function toggleCase() {
+playCyberSound();
+isUpperCase = !isUpperCase;
+updateHashDisplay();
+showToast(isUpperCase ? "🔠 Converted to UPPERCASE" : "🔡 Converted to lowercase");
+}
+
+function detectHashFormatManual() {
+playCyberSound();
+const val = document.getElementById('verify-input').value.trim();
+const tag = document.getElementById('detected-tag');
+
+if (!val) {
+alert("Please paste a hash string in the box first!");
+tag.style.display = 'none';
+return;
+}
+
+tag.style.display = 'block';
+
+if (/^[a-fA-F0-9]{32}$/.test(val)) {
+tag.innerText = "💡 Detected Format: MD5 Hash (32 characters / 128-bit)";
+} else if (/^[a-fA-F0-9]{40}$/.test(val)) {
+tag.innerText = "💡 Detected Format: SHA-1 Hash (40 characters / 160-bit)";
+} else if (/^[a-fA-F0-9]{64}$/.test(val)) {
+tag.innerText = "💡 Detected Format: SHA-256 Hash (64 characters / 256-bit)";
+} else if (/^[a-fA-F0-9]{128}$/.test(val)) {
+tag.innerText = "💡 Detected Format: SHA-512 Hash (128 characters / 512-bit)";
+} else {
+tag.innerText = "⚠️ Unknown or Invalid Hash Format";
+}
+}
+
+function copySingle(elementId) {
+playCyberSound();
+const text = document.getElementById(elementId).innerText;
+navigator.clipboard.writeText(text).then(() => {
+showToast("✅ Hash copied to clipboard!");
+});
+}
+
+function copyAllHashes() {
+playCyberSound();
+if (!lastGeneratedData.md5) return;
+const fmt = (str) => isUpperCase ? str.toUpperCase() : str.toLowerCase();
+
+const fullText = `--- ACSN Hash Details ---\nSource: ${lastGeneratedData.source}\nMD5: ${fmt(lastGeneratedData.md5)}\nSHA-1: ${fmt(lastGeneratedData.sha1)}\nSHA-256: ${fmt(lastGeneratedData.sha256)}\nSHA-512: ${fmt(lastGeneratedData.sha512)}`;
+
+const btn = document.getElementById('copy-all-btn');
+navigator.clipboard.writeText(fullText).then(() => {
+btn.innerHTML = "✅ All Hashes Copied!";
+btn.classList.add('copied');
+showToast("✅ All Hash details copied to clipboard!");
+
+setTimeout(() => {
+btn.innerHTML = "📋 Copy All Hashes &amp; Details";
+btn.classList.remove('copied');
+}, 3000);
+});
+}
+
+function verifyHash() {
+playCyberSound();
+const verifyInput = document.getElementById('verify-input').value.trim().toLowerCase();
+const statusBox = document.getElementById('match-status');
+
+if (!verifyInput) {
+alert("Please enter a hash string to verify!");
+return;
+}
+
+if (!lastGeneratedData.md5) {
+alert("Please generate hashes for text or file first above!");
+return;
+}
+
+statusBox.style.display = 'block';
+
+if (
+verifyInput === lastGeneratedData.md5.toLowerCase() ||
+verifyInput === lastGeneratedData.sha1.toLowerCase() ||
+verifyInput === lastGeneratedData.sha256.toLowerCase() ||
+verifyInput === lastGeneratedData.sha512.toLowerCase()
+) {
+statusBox.className = "match-status match-success";
+statusBox.innerText = "✅ MATCHED! The hash matches your generated input/file.";
+} else {
+statusBox.className = "match-status match-error";
+statusBox.innerText = "❌ MISMATCHED! This hash does not match the generated input/file.";
+}
+}
+
+function clearAll() {
+playCyberSound();
+document.getElementById('text-input').value = "";
+document.getElementById('file-input').value = "";
+document.getElementById('file-label').innerText = "Click here to select a file from your device";
+document.getElementById('verify-input').value = "";
+document.getElementById('detected-tag').style.display = 'none';
+document.getElementById('detected-tag').innerText = "";
+document.getElementById('results-area').style.display = 'none';
+document.getElementById('match-status').style.display = 'none';
+selectedFile = null;
+lastGeneratedData = {};
+
+// मोड रीसेट करें
+currentMode = null;
+document.getElementById('tab-text').classList.remove('active');
+document.getElementById('tab-file').classList.remove('active');
+document.getElementById('generator-body').style.display = 'none';
+document.getElementById('active-mode-indicator').style.display = 'none';
+document.getElementById('no-mode-msg').style.display = 'block';
+
+showToast("🧹 All cleared!");
+}
+
+function showToast(message) {
+const toast = document.getElementById('toast-msg');
+toast.innerText = message;
+toast.style.display = 'block';
+setTimeout(() => {
+toast.style.display = 'none';
+}, 3000);
+}
+</script>
+
+</body>
+
+</html>

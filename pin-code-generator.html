@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PIN Code Generator | ACSN Tools</title>
+
+<meta name="description" content="Generate secure PIN codes locally inside your browser with purpose selection, active state indicators, sound effects, and 5 PIN history tracking.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+/* 1. Main Tool Container */
+.tool-container {
+max-width: 800px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* 2. How to use Box */
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* 3. Mode Instruction Notice */
+.mode-instruction {
+text-align: center;
+color: #f59e0b;
+background-color: rgba(245, 158, 11, 0.1);
+border: 1px dashed #f59e0b;
+padding: 12px;
+border-radius: 8px;
+font-weight: 600;
+margin-bottom: 15px;
+}
+
+/* 4. Tab selection buttons (placed right after How to Use) */
+.tab-selection {
+display: flex;
+gap: 12px;
+margin-bottom: 20px;
+}
+.tab-btn {
+flex: 1;
+padding: 14px;
+background-color: #0f172a;
+color: #9ca3af;
+border: 2px solid #334155;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 700;
+font-size: 1rem;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.tab-btn:hover {
+border-color: #2563eb;
+color: #ffffff;
+}
+/* Active Tab Style */
+.tab-btn.active {
+background-color: #2563eb;
+color: #ffffff;
+border-color: #3b82f6;
+box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+}
+
+/* 5. Active Mode Badge */
+.active-mode-badge {
+background-color: #1e1b4b;
+color: #818cf8;
+border: 1px solid #4338ca;
+padding: 8px 14px;
+border-radius: 6px;
+font-size: 0.9rem;
+font-weight: 600;
+margin-bottom: 15px;
+display: inline-block;
+}
+
+/* 6. Purpose selection grid */
+.purpose-label-title {
+color: #ffffff;
+font-size: 0.95rem;
+font-weight: 600;
+margin-bottom: 10px;
+display: block;
+}
+.controls-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 12px;
+margin: 10px 0 20px 0;
+padding: 15px;
+background-color: #0f172a;
+border-radius: 8px;
+border: 1px solid #1e293b;
+}
+.control-group {
+display: flex;
+align-items: center;
+gap: 10px;
+color: #9ca3af;
+font-size: 0.9rem;
+cursor: pointer;
+padding: 8px 12px;
+background-color: #1e293b;
+border: 1px solid #334155;
+border-radius: 6px;
+transition: all 0.2s ease;
+user-select: none;
+}
+.control-group.active-check {
+color: #00ffcc;
+border-color: #00ffcc;
+background-color: rgba(0, 255, 204, 0.08);
+font-weight: 600;
+}
+.control-group input[type="checkbox"] {
+width: 18px;
+height: 18px;
+accent-color: #00ffcc;
+cursor: pointer;
+}
+
+/* 7. Slider */
+.length-slider-container {
+margin: 20px 0;
+}
+.length-label {
+display: flex;
+justify-content: space-between;
+color: #ffffff;
+margin-bottom: 8px;
+font-weight: 500;
+}
+.length-slider {
+width: 100%;
+height: 8px;
+border-radius: 5px;
+background: #334155;
+outline: none;
+accent-color: #00ffcc;
+cursor: pointer;
+}
+
+/* 8. Output Box & Buttons */
+.output-box-container {
+display: flex;
+gap: 10px;
+margin: 15px 0;
+flex-wrap: wrap;
+}
+.output-input {
+flex: 1;
+min-width: 220px;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #00ffcc;
+padding: 14px 18px;
+font-size: 1.5rem;
+font-family: monospace;
+border-radius: 8px;
+letter-spacing: 4px;
+text-align: center;
+font-weight: 700;
+}
+
+.action-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s ease;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+}
+.action-btn:hover {
+background-color: #1d4ed8;
+}
+.btn-gen {
+background-color: #2563eb;
+width: 100%;
+padding: 15px;
+font-size: 1.1rem;
+margin-top: 10px;
+}
+.btn-gen:hover {
+background-color: #1d4ed8;
+box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+.btn-copy {
+background-color: #059669;
+}
+.btn-copy:hover {
+background-color: #047857;
+}
+.btn-copy.copied {
+background-color: #10b981;
+}
+
+/* 9. History Items */
+.history-item {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+border-radius: 8px;
+padding: 12px 16px;
+margin-bottom: 12px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 10px;
+}
+.history-pin {
+color: #00ffcc;
+font-size: 1.2rem;
+font-family: monospace;
+font-weight: 700;
+letter-spacing: 2px;
+}
+.history-details {
+color: #9ca3af;
+font-size: 0.85rem;
+text-align: right;
+}
+.history-purpose {
+color: #38bdf8;
+font-weight: 600;
+}
+
+/* 10. Toast Notification */
+.toast-msg {
+color: #10b981;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 12px;
+padding: 10px 14px;
+background-color: rgba(16, 185, 129, 0.1);
+border: 1px solid rgba(16, 185, 129, 0.3);
+border-radius: 6px;
+display: none;
+text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>PIN Code Generator</h1>
+
+<p>
+Generate secure PIN codes, specify what they are for, and track your last 5 generated PINs safely.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="PIN Generator Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<!-- 1. How to use Box -->
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>First select an option below (<strong>Generate PIN Mode</strong> or <strong>PIN History Mode</strong>). Once selected, configure your settings and click <strong>"⚡ Generate PIN Code"</strong>.</p>
+</div>
+
+<!-- 2. Notice message before option selection -->
+<div id="no-mode-msg" class="mode-instruction">
+👇 Please select an Option below to activate the Tool!
+</div>
+
+<!-- 3. Option Buttons Selection (Placed right after How to Use) -->
+<div class="tab-selection">
+<button class="tab-btn" id="tab-gen" onclick="switchTab('generate')">⚡ Generate PIN</button>
+<button class="tab-btn" id="tab-hist" onclick="switchTab('history')">📜 PIN History (Last 5)</button>
+</div>
+
+<!-- 4. Active Mode Badge Indicator -->
+<div id="active-mode-indicator" style="display: none;">
+<span class="active-mode-badge" id="active-mode-badge">⚡ Currently Active Mode: Generate PIN</span>
+</div>
+
+<!-- 5. Dynamic Container (Shows only after clicking a button) -->
+<div id="generator-body" style="display: none;">
+
+<!-- SECTION: GENERATE PIN -->
+<div id="section-generate" style="display: none;">
+<span class="purpose-label-title">Select Purpose / Use Case:</span>
+<div class="controls-grid">
+<label class="control-group active-check">
+<input type="checkbox" name="pin-purpose" value="ATM Card" checked onchange="toggleCheckStyle(this)"> 💳 ATM Card
+</label>
+<label class="control-group">
+<input type="checkbox" name="pin-purpose" value="Mobile App" onchange="toggleCheckStyle(this)"> 📱 Mobile App
+</label>
+<label class="control-group">
+<input type="checkbox" name="pin-purpose" value="UPI / Banking" onchange="toggleCheckStyle(this)"> 🏦 UPI / Banking
+</label>
+<label class="control-group">
+<input type="checkbox" name="pin-purpose" value="SIM Lock" onchange="toggleCheckStyle(this)"> 📲 SIM Lock
+</label>
+<label class="control-group">
+<input type="checkbox" name="pin-purpose" value="Smart Lock" onchange="toggleCheckStyle(this)"> 🔐 Smart Lock
+</label>
+<label class="control-group">
+<input type="checkbox" name="pin-purpose" value="General / Other" onchange="toggleCheckStyle(this)"> 📁 Other
+</label>
+</div>
+
+<div class="length-slider-container">
+<div class="length-label">
+<span>PIN Length:</span>
+<span id="length-val" style="color: #00ffcc; font-weight: 700;">4</span>
+</div>
+<input type="range" id="length-slider" class="length-slider" min="4" max="12" value="4" oninput="document.getElementById('length-val').innerText = this.value">
+</div>
+
+<button class="action-btn btn-gen" onclick="generatePin()">
+⚡ Generate PIN Code
+</button>
+
+<!-- Result Output Area -->
+<div id="result-section" style="margin-top: 25px; display: none;">
+<label style="color: #9ca3af; font-size: 0.9rem; font-weight: 500;">Your Generated PIN Code:</label>
+<div class="output-box-container">
+<input type="text" id="pin-output" class="output-input" readonly placeholder="Click generate...">
+<button id="copy-btn" class="action-btn btn-copy" onclick="copyPin()">📋 Copy</button>
+</div>
+</div>
+</div>
+
+<!-- SECTION: HISTORY -->
+<div id="section-history" style="display: none;">
+<div id="history-container">
+<p style="color: #9ca3af; text-align: center; font-size: 0.95rem;">No PINs generated yet.</p>
+</div>
+</div>
+
+</div> <!-- End generator-body -->
+
+<div id="toast-msg" class="toast-msg"></div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+let pinHistory = [];
+let currentMode = null;
+
+// 🔊 सिस्टम बीप साउंड (दी गई सैंपल फाइल के अनुसार)
+function playCyberSound() {
+try {
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const osc1 = audioCtx.createOscillator();
+const osc2 = audioCtx.createOscillator();
+const gain = audioCtx.createGain();
+
+osc1.type = 'sawtooth';
+osc2.type = 'sine';
+
+osc1.frequency.setValueAtTime(520, audioCtx.currentTime);
+osc1.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.08);
+
+osc2.frequency.setValueAtTime(1040, audioCtx.currentTime);
+osc2.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.08);
+
+gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+
+osc1.connect(gain);
+osc2.connect(gain);
+gain.connect(audioCtx.destination);
+
+osc1.start();
+osc2.start();
+osc1.stop(audioCtx.currentTime + 0.08);
+osc2.stop(audioCtx.currentTime + 0.08);
+} catch (e) {}
+}
+
+// स्विच टैब / मोड
+function switchTab(mode) {
+playCyberSound();
+currentMode = mode;
+
+document.getElementById('no-mode-msg').style.display = 'none';
+document.getElementById('generator-body').style.display = 'block';
+document.getElementById('active-mode-indicator').style.display = 'block';
+
+const badge = document.getElementById('active-mode-badge');
+const btnGen = document.getElementById('tab-gen');
+const btnHist = document.getElementById('tab-hist');
+
+if (mode === 'generate') {
+btnGen.classList.add('active');
+btnHist.classList.remove('active');
+
+document.getElementById('section-generate').style.display = 'block';
+document.getElementById('section-history').style.display = 'none';
+
+badge.innerText = "⚡ Currently Active Mode: ⚡ Generate PIN";
+} else if (mode === 'history') {
+btnHist.classList.add('active');
+btnGen.classList.remove('active');
+
+document.getElementById('section-history').style.display = 'block';
+document.getElementById('section-generate').style.display = 'none';
+
+badge.innerText = "⚡ Currently Active Mode: 📜 PIN History (Last 5)";
+renderHistory();
+}
+}
+
+function toggleCheckStyle(checkbox) {
+const parentLabel = checkbox.closest('.control-group');
+if (checkbox.checked) {
+parentLabel.classList.add('active-check');
+} else {
+parentLabel.classList.remove('active-check');
+}
+}
+
+function generatePin() {
+playCyberSound();
+
+const length = parseInt(document.getElementById('length-slider').value);
+const checkedPurposes = Array.from(document.querySelectorAll('input[name="pin-purpose"]:checked')).map(el => el.value);
+const purposeStr = checkedPurposes.length > 0 ? checkedPurposes.join(', ') : 'General Purpose';
+
+const digits = "0123456789";
+let pin = "";
+const randomArray = new Uint32Array(length);
+window.crypto.getRandomValues(randomArray);
+
+for (let i = 0; i < length; i++) {
+pin += digits[randomArray[i] % 10];
+}
+
+document.getElementById('pin-output').value = pin;
+document.getElementById('result-section').style.display = 'block';
+
+const now = new Date();
+const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+const dateStr = now.toLocaleDateString();
+
+pinHistory.unshift({
+pin: pin,
+purpose: purposeStr,
+date: dateStr,
+time: timeStr
+});
+
+if (pinHistory.length > 5) {
+pinHistory.pop();
+}
+
+const copyBtn = document.getElementById('copy-btn');
+copyBtn.innerHTML = "📋 Copy";
+copyBtn.classList.remove('copied');
+showToast("⚡ PIN Generated successfully!");
+}
+
+function copyPin() {
+const pinInput = document.getElementById('pin-output');
+const copyBtn = document.getElementById('copy-btn');
+if (!pinInput.value) return;
+
+playCyberSound();
+
+navigator.clipboard.writeText(pinInput.value).then(() => {
+copyBtn.innerHTML = "✅ Copied!";
+copyBtn.classList.add('copied');
+showToast("✅ PIN successfully copied to clipboard!");
+
+setTimeout(() => {
+copyBtn.innerHTML = "📋 Copy";
+copyBtn.classList.remove('copied');
+}, 3000);
+});
+}
+
+function renderHistory() {
+const container = document.getElementById('history-container');
+if (pinHistory.length === 0) {
+container.innerHTML = `<p style="color: #9ca3af; text-align: center; font-size: 0.95rem;">No PINs generated yet.</p>`;
+return;
+}
+
+let html = "";
+pinHistory.forEach(item => {
+html += `
+<div class="history-item">
+<div>
+<div class="history-pin">${item.pin}</div>
+<div style="font-size: 0.8rem; color: #9ca3af; margin-top: 4px;">Purpose: <span class="history-purpose">${item.purpose}</span></div>
+</div>
+<div class="history-details">
+<div>📅 ${item.date}</div>
+<div>⏰ ${item.time}</div>
+</div>
+</div>
+`;
+});
+
+container.innerHTML = html;
+}
+
+function showToast(message) {
+const toast = document.getElementById('toast-msg');
+toast.innerText = message;
+toast.style.display = 'block';
+setTimeout(() => {
+toast.style.display = 'none';
+}, 3000);
+}
+</script>
+
+</body>
+
+</html>

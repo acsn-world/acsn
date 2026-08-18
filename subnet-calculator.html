@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Subnet CIDR Calculator | ACSN Tools</title>
+
+<meta name="description" content="Calculate IP ranges, subnet masks, usable host addresses, and network details instantly.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#2563EB">
+
+<link rel="icon" type="image/png" href="../../home/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../home/style.css">
+
+<style>
+.tool-container {
+max-width: 950px;
+margin: 30px auto;
+padding: 25px;
+background-color: var(--card-bg, #111827);
+border: 1px solid var(--border-color, #1f2937);
+border-radius: 12px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+.how-to-use-box {
+background-color: #0f172a;
+border-left: 4px solid #00ffcc;
+padding: 15px 20px;
+border-radius: 8px;
+margin-bottom: 25px;
+}
+.how-to-use-box h2 {
+color: #00ffcc;
+font-size: 1.15rem;
+margin-bottom: 8px;
+margin-top: 0;
+}
+.how-to-use-box p {
+color: #9ca3af;
+font-size: 0.92rem;
+margin: 0;
+line-height: 1.6;
+}
+
+/* INPUT SECTION */
+.input-group {
+display: flex;
+gap: 12px;
+margin-bottom: 20px;
+}
+@media (max-width: 650px) {
+.input-group {
+flex-direction: column;
+}
+}
+.ip-input {
+flex: 2;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #38bdf8;
+padding: 14px 18px;
+font-size: 1rem;
+border-radius: 8px;
+outline: none;
+transition: all 0.2s;
+}
+.ip-input:focus {
+border-color: #2563eb;
+box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+.cidr-select {
+flex: 1;
+background-color: #0f172a;
+border: 1px solid #334155;
+color: #00ffcc;
+padding: 14px 18px;
+font-size: 1rem;
+border-radius: 8px;
+outline: none;
+cursor: pointer;
+}
+.cidr-select:focus {
+border-color: #2563eb;
+}
+.calc-btn {
+background-color: #2563eb;
+color: #ffffff;
+border: none;
+padding: 14px 24px;
+font-size: 1rem;
+font-weight: 600;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+white-space: nowrap;
+}
+.calc-btn:hover {
+background-color: #1d4ed8;
+transform: translateY(-1px);
+}
+
+/* RESULTS PANEL */
+#results-container {
+display: none;
+margin-top: 25px;
+padding-top: 20px;
+border-top: 1px dashed #1e293b;
+animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.result-cards-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 15px;
+margin-bottom: 25px;
+}
+.stat-card {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+border-radius: 8px;
+padding: 15px;
+text-align: center;
+}
+.stat-card .label {
+color: #9ca3af;
+font-size: 0.8rem;
+text-transform: uppercase;
+font-weight: 600;
+margin-bottom: 6px;
+}
+.stat-card .value {
+color: #00ffcc;
+font-size: 1.15rem;
+font-family: monospace;
+font-weight: 700;
+word-break: break-all;
+}
+
+.details-table-wrapper {
+background-color: #0f172a;
+border: 1px solid #1e293b;
+border-radius: 8px;
+overflow: hidden;
+}
+.details-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 0.9rem;
+text-align: left;
+}
+.details-table th, .details-table td {
+padding: 12px 18px;
+border-bottom: 1px solid #1e293b;
+}
+.details-table th {
+background-color: #1e293b;
+color: #9ca3af;
+font-weight: 600;
+width: 35%;
+}
+.details-table td {
+color: #e2e8f0;
+font-family: monospace;
+}
+.details-table tr:last-child td, .details-table tr:last-child th {
+border-bottom: none;
+}
+
+.badge-tag {
+display: inline-block;
+padding: 3px 8px;
+border-radius: 4px;
+font-size: 0.8rem;
+font-weight: 600;
+font-family: sans-serif;
+}
+.badge-private { background-color: rgba(234, 179, 8, 0.2); color: #facc15; }
+.badge-public { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.badge-special { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+.error-box {
+background-color: rgba(239, 68, 68, 0.15);
+border: 1px solid #ef4444;
+color: #fca5a5;
+padding: 12px 16px;
+border-radius: 8px;
+margin-top: 15px;
+display: none;
+font-size: 0.9rem;
+line-height: 1.5;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<section class="hero">
+<div class="hero-content">
+<p class="greeting">
+<span id="current-time"></span>
+<span>•</span>
+<span id="greeting-text"></span>
+</p>
+
+<img src="../../home/logo.png" alt="ACSN Logo" class="logo">
+
+<h1>Subnet CIDR Calculator</h1>
+
+<p>
+Calculate IP ranges, subnet masks, and usable host addresses for network planning.
+</p>
+
+<form class="search-box" id="search-form" role="search">
+<input type="search" id="search" name="search" placeholder="Search tools, software or guides..." autocomplete="off">
+<button type="submit" class="search-button" id="search-button">Search</button>
+</form>
+
+<div class="hero-buttons">
+<a href="../../home/tools.html" class="primary-button">⬅️ Back to Tools</a>
+<a href="../../home/index.html" class="secondary-button">🏠 Go to Home</a>
+</div>
+</div>
+
+<div class="hero-image-container">
+<img src="../../home/hero.png" alt="Subnet Calculator Illustration" class="hero-image">
+</div>
+</section>
+</header>
+
+<main>
+
+<div class="tool-container">
+
+<div class="how-to-use-box">
+<h2>💡 How to Use:</h2>
+<p>Enter an IP address (e.g. <code>192.168.1.1</code> or <code>10.0.0.1/24</code>), select the Subnet CIDR Prefix, and click <strong>Calculate Subnet</strong> to generate full network details.</p>
+</div>
+
+<!-- INPUT SECTION -->
+<div class="input-group">
+  <input type="text" id="ip-input" class="ip-input" placeholder="Enter IP address... e.g. 192.168.1.1" onkeydown="if(event.key==='Enter') calculateSubnet()">
+  
+  <select id="cidr-select" class="cidr-select">
+    <!-- Populated dynamically via JS -->
+  </select>
+
+  <button type="button" class="calc-btn" onclick="calculateSubnet()">⚡ Calculate Subnet</button>
+</div>
+
+<!-- ERROR BOX -->
+<div id="error-box" class="error-box"></div>
+
+<!-- RESULT PANEL CONTAINER -->
+<div id="results-container">
+  
+  <!-- SUMMARY CARDS -->
+  <div class="result-cards-grid">
+    <div class="stat-card">
+      <div class="label">Network Address</div>
+      <div class="value" id="res-net-ip">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Subnet Mask</div>
+      <div class="value" id="res-mask">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Usable Host Range</div>
+      <div class="value" id="res-usable-range" style="font-size:0.95rem;">-</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Broadcast Address</div>
+      <div class="value" id="res-broadcast-ip">-</div>
+    </div>
+  </div>
+
+  <!-- DETAILED TABLE -->
+  <div class="details-table-wrapper">
+    <table class="details-table">
+      <tbody>
+        <tr>
+          <th>CIDR Notation</th>
+          <td id="res-cidr-notation">-</td>
+        </tr>
+        <tr>
+          <th>Wildcard Mask</th>
+          <td id="res-wildcard">-</td>
+        </tr>
+        <tr>
+          <th>Total Hosts</th>
+          <td id="res-total-hosts">-</td>
+        </tr>
+        <tr>
+          <th>Usable Hosts</th>
+          <td id="res-usable-hosts">-</td>
+        </tr>
+        <tr>
+          <th>IP Class</th>
+          <td id="res-ip-class">-</td>
+        </tr>
+        <tr>
+          <th>IP Type</th>
+          <td id="res-ip-type">-</td>
+        </tr>
+        <tr>
+          <th>Binary Subnet Mask</th>
+          <td id="res-binary-mask" style="font-size:0.82rem; word-break:break-all;">-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+<nav class="footer-links">
+<a href="../../home/help.html">Contact</a>
+<a href="../../home/privacy-policy.html">Privacy Policy</a>
+<a href="../../home/terms-and-conditions.html">Terms &amp; Conditions</a>
+</nav>
+
+<p>&copy; 2026 ACSN. All Rights Reserved.</p>
+</footer>
+
+<script src="../../home/script.js"></script>
+
+<script>
+// 1. LIVE CLOCK & GREETING SCRIPT
+function updateClockAndGreeting() {
+  const now = new Date();
+  const timeEl = document.getElementById('current-time');
+  const greetEl = document.getElementById('greeting-text');
+  
+  if (timeEl) {
+    timeEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  }
+  
+  if (greetEl) {
+    const hours = now.getHours();
+    let greeting = "Good Evening!";
+    if (hours < 12) greeting = "Good Morning!";
+    else if (hours < 17) greeting = "Good Afternoon!";
+    greetEl.innerText = greeting;
+  }
+}
+setInterval(updateClockAndGreeting, 1000);
+updateClockAndGreeting();
+
+// 2. AUDIO FEEDBACK (Web Audio API)
+function playCalcSound() {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5 note
+    osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1); // C6 note
+
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.12);
+  } catch (e) {}
+}
+
+// 3. POPULATE CIDR DROPDOWN ON LOAD
+function populateCidrDropdown() {
+  const select = document.getElementById('cidr-select');
+  select.innerHTML = '';
+  
+  for (let i = 32; i >= 0; i--) {
+    const opt = document.createElement('option');
+    opt.value = i;
+    
+    // Total IPs calculation
+    const totalIps = Math.pow(2, 32 - i);
+    const hostText = totalIps >= 1000000 
+      ? (totalIps / 1048576).toFixed(1) + 'M IPs' 
+      : (totalIps >= 1000 ? (totalIps / 1024).toFixed(1) + 'K IPs' : totalIps + ' IPs');
+
+    opt.innerText = `/${i} (${hostText})`;
+    if (i === 24) opt.selected = true; // Default /24
+    select.appendChild(opt);
+  }
+}
+populateCidrDropdown();
+
+// 4. IP CONVERSION UTILITIES
+function ipToInt(ipStr) {
+  return ipStr.split('.').reduce((acc, octet) => ((acc << 8) + parseInt(octet, 10)) >>> 0, 0);
+}
+
+function intToIp(intVal) {
+  return [
+    (intVal >>> 24) & 255,
+    (intVal >>> 16) & 255,
+    (intVal >>> 8) & 255,
+    intVal & 255
+  ].join('.');
+}
+
+function isValidIPv4(ip) {
+  const regex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  return regex.test(ip);
+}
+
+function getIpClass(firstOctet) {
+  if (firstOctet >= 0 && firstOctet <= 126) return "Class A";
+  if (firstOctet === 127) return "Class A (Loopback)";
+  if (firstOctet >= 128 && firstOctet <= 191) return "Class B";
+  if (firstOctet >= 192 && firstOctet <= 223) return "Class C";
+  if (firstOctet >= 224 && firstOctet <= 239) return "Class D (Multicast)";
+  if (firstOctet >= 240 && firstOctet <= 255) return "Class E (Experimental)";
+  return "Unknown";
+}
+
+function getIpType(ipInt) {
+  const firstOctet = (ipInt >>> 24) & 255;
+  const secondOctet = (ipInt >>> 16) & 255;
+
+  // Private Ranges
+  if (firstOctet === 10) return '<span class="badge-tag badge-private">Private (10.0.0.0/8)</span>';
+  if (firstOctet === 172 && secondOctet >= 16 && secondOctet <= 31) return '<span class="badge-tag badge-private">Private (172.16.0.0/12)</span>';
+  if (firstOctet === 192 && secondOctet === 168) return '<span class="badge-tag badge-private">Private (192.168.0.0/16)</span>';
+  
+  // Special Ranges
+  if (firstOctet === 127) return '<span class="badge-tag badge-special">Loopback</span>';
+  if (firstOctet === 169 && secondOctet === 254) return '<span class="badge-tag badge-special">Link-Local (APIPA)</span>';
+  if (firstOctet >= 224) return '<span class="badge-tag badge-special">Multicast / Reserved</span>';
+
+  return '<span class="badge-tag badge-public">Public IP</span>';
+}
+
+function toBinaryString(intVal) {
+  const binary = (intVal >>> 0).toString(2).padStart(32, '0');
+  return binary.match(/.{1,8}/g).join('.');
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// 5. MAIN SUBNET CALCULATION LOGIC
+function calculateSubnet() {
+  playCalcSound();
+
+  let rawInput = document.getElementById('ip-input').value.trim();
+  const errorBox = document.getElementById('error-box');
+  const resultsContainer = document.getElementById('results-container');
+  const cidrSelect = document.getElementById('cidr-select');
+
+  errorBox.style.display = 'none';
+
+  if (!rawInput) {
+    errorBox.innerText = "⚠️ Please enter an IP address (e.g. 192.168.1.1).";
+    errorBox.style.display = 'block';
+    resultsContainer.style.display = 'none';
+    return;
+  }
+
+  // Handle CIDR notation if user typed e.g. "10.0.0.1/16" in input box
+  let ipStr = rawInput;
+  let prefix = parseInt(cidrSelect.value, 10);
+
+  if (rawInput.includes('/')) {
+    const parts = rawInput.split('/');
+    ipStr = parts[0].trim();
+    const parsedPrefix = parseInt(parts[1].trim(), 10);
+    
+    if (!isNaN(parsedPrefix) && parsedPrefix >= 0 && parsedPrefix <= 32) {
+      prefix = parsedPrefix;
+      cidrSelect.value = prefix; // Sync dropdown
+    }
+  }
+
+  if (!isValidIPv4(ipStr)) {
+    errorBox.innerText = `⚠️ Invalid IPv4 address "${escapeHTML(ipStr)}". Please use standard format (e.g. 192.168.1.1).`;
+    errorBox.style.display = 'block';
+    resultsContainer.style.display = 'none';
+    return;
+  }
+
+  // Mathematical Calculations
+  const ipInt = ipToInt(ipStr);
+  const maskInt = prefix === 0 ? 0 : ((0xFFFFFFFF << (32 - prefix)) >>> 0);
+  const wildcardInt = (~maskInt) >>> 0;
+  
+  const netInt = (ipInt & maskInt) >>> 0;
+  const broadcastInt = (netInt | wildcardInt) >>> 0;
+
+  const totalHosts = Math.pow(2, 32 - prefix);
+  
+  let usableHosts = 0;
+  let firstHostInt = netInt;
+  let lastHostInt = broadcastInt;
+
+  if (prefix === 32) {
+    usableHosts = 1;
+    firstHostInt = ipInt;
+    lastHostInt = ipInt;
+  } else if (prefix === 31) {
+    usableHosts = 2; // Point-to-Point link (RFC 3021)
+    firstHostInt = netInt;
+    lastHostInt = broadcastInt;
+  } else {
+    usableHosts = totalHosts - 2;
+    firstHostInt = netInt + 1;
+    lastHostInt = broadcastInt - 1;
+  }
+
+  // Update UI Elements
+  document.getElementById('res-net-ip').innerText = intToIp(netInt);
+  document.getElementById('res-mask').innerText = intToIp(maskInt);
+  document.getElementById('res-broadcast-ip').innerText = intToIp(broadcastInt);
+
+  if (prefix === 32) {
+    document.getElementById('res-usable-range').innerText = intToIp(ipInt) + " (Single IP)";
+  } else if (prefix === 31) {
+    document.getElementById('res-usable-range').innerText = `${intToIp(firstHostInt)} - ${intToIp(lastHostInt)}`;
+  } else {
+    document.getElementById('res-usable-range').innerText = `${intToIp(firstHostInt)} - ${intToIp(lastHostInt)}`;
+  }
+
+  document.getElementById('res-cidr-notation').innerText = `${intToIp(netInt)}/${prefix}`;
+  document.getElementById('res-wildcard').innerText = intToIp(wildcardInt);
+  document.getElementById('res-total-hosts').innerText = totalHosts.toLocaleString();
+  document.getElementById('res-usable-hosts').innerText = usableHosts.toLocaleString();
+
+  const firstOctet = (ipInt >>> 24) & 255;
+  document.getElementById('res-ip-class').innerText = getIpClass(firstOctet);
+  document.getElementById('res-ip-type').innerHTML = getIpType(ipInt);
+  document.getElementById('res-binary-mask').innerText = toBinaryString(maskInt);
+
+  resultsContainer.style.display = 'block';
+}
+</script>
+
+</body>
+
+</html>
